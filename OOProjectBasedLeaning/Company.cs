@@ -148,11 +148,38 @@ namespace OOProjectBasedLeaning
 
         private List<Employee> AcquireEmployees()
         {
+            List<Employee> employeeList = new List<Employee>();
 
-            // TODO: ここで従業員のリストを取得する処理を実装する
-            return staticEmployeeList;
+            try
+            {
+                XDocument doc = XDocument.Load("employees.xml"); // XMLファイルのパス
+                foreach (var element in doc.Descendants("Employee"))
+                {
+                    int id = int.Parse(element.Element("Id")?.Value ?? "0");
+                    string name = element.Element("Name")?.Value ?? "Unknown";
 
+                    // ManagerかEmployeeかを判定（例: Roleタグで）
+                    string role = element.Element("Role")?.Value ?? "Employee";
+                    if (role == "Manager")
+                    {
+                        employeeList.Add(new Manager(id, name));
+                    }
+                    else
+                    {
+                        employeeList.Add(new EmployeeModel(id, name));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading employees: " + ex.Message);
+                // fallback
+                employeeList = staticEmployeeList;
+            }
+
+            return employeeList;
         }
+
 
         public void ClockIn(Employee employee)
         {
