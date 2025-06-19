@@ -69,7 +69,7 @@ public class TimeTrackerModel : TimeTracker
     {
         if (IsAtWork(employeeId))
         {
-            throw new InvalidOperationException("Employee is already at work.");
+            throw new InvalidOperationException("従業員はすでに出勤しています");
         }
 
         if (!timestamp4PunchIn.ContainsKey(DateTime.Today))
@@ -84,7 +84,7 @@ public class TimeTrackerModel : TimeTracker
     {
         if (!IsAtWork(employeeId))
         {
-            throw new InvalidOperationException("Employee is not at work.");
+            throw new InvalidOperationException("従業員はすでに退勤しています");
         }
 
         if (!timestamp4PunchOut.ContainsKey(DateTime.Today))
