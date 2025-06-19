@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OOProjectBasedLeaning;
+
+
 
 namespace OOProjectBasedLeaning
 {
 
     public class TimeTrackerPanel : Panel
     {
+        // フィールド（クラス内で使う変数）
+        private TimeTracker timeTracker; // ← ここで一度だけ定義
+        private Company company;
 
-        private TimeTracker timeTracker;
         private Button btnPunchIn;
         private Button btnPunchOut;
         private Label lblStatus;
@@ -20,13 +25,12 @@ namespace OOProjectBasedLeaning
         // テスト用に仮の従業員IDを指定（本番ではログイン情報と連携する）
         private int employeeId = 1;
 
-        public TimeTrackerPanel(TimeTracker timeTracker)
+
+        public TimeTrackerPanel(TimeTracker timeTracker, Company company)
         {
-
             this.timeTracker = timeTracker;
-
+            this.company = company;
             InitializeComponent();
-
         }
 
         private void InitializeComponent()
@@ -83,14 +87,13 @@ namespace OOProjectBasedLeaning
 
         }
 
-
-
         private void BtnPunchIn_Click(object sender, EventArgs e)
         {
             try
             {
                 timeTracker.PunchIn(employeeId);
-                lblStatus.Text = "状態: 出勤中";
+                var employee = company.FindEmployeeById(employeeId);
+                lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
 
                 // 出勤時間を取得して表示
                 if (timeTracker is TimeTrackerModel model &&
@@ -111,7 +114,8 @@ namespace OOProjectBasedLeaning
             try
             {
                 timeTracker.PunchOut(employeeId);
-                lblStatus.Text = "状態: 退勤済み";
+                var employee = company.FindEmployeeById(employeeId);
+                lblStatus.Text = $"{employee.Name} さんは現在、退勤済み";
 
                 // 退勤時間を取得して表示
                 if (timeTracker is TimeTrackerModel model &&
