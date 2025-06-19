@@ -43,6 +43,10 @@ namespace OOProjectBasedLeaning
 
         }
 
+        private void EmployeeCreatorForm_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 
 }
