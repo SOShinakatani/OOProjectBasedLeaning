@@ -74,5 +74,7 @@ namespace OOProjectBasedLeaning
             public static readonly EditMode On = new EditMode();
             public static readonly EditMode Off = new EditMode();
         }
+
+
     }
 }
