@@ -14,6 +14,8 @@ namespace OOProjectBasedLeaning
         private Button btnPunchIn;
         private Button btnPunchOut;
         private Label lblStatus;
+        private Label lblPunchInTime;
+        private Label lblPunchOutTime;
 
         // テスト用に仮の従業員IDを指定（本番ではログイン情報と連携する）
         private int employeeId = 1;
@@ -54,20 +56,34 @@ namespace OOProjectBasedLeaning
             lblStatus = new Label
             {
                 Text = "状態: 未出勤",
-                Location = new Point(10, 60),
+                Location = new Point(10, 50),
                 AutoSize = true
             };
 
-            // パネルに追加
-            this.Controls.Add(btnPunchIn);
-            this.Controls.Add(btnPunchOut);
-            this.Controls.Add(lblStatus);
+            lblPunchInTime = new Label
+            {
+                Text = "出勤時間: -",
+                Location = new Point(10, 80),
+                AutoSize = true
+            };
 
+            lblPunchOutTime = new Label
+            {
+                Text = "退勤時間: -",
+                Location = new Point(10, 110),
+                AutoSize = true
+            };
 
-            // Initialize UI components for the Time Tracker panel
-            // This could include buttons for PunchIn, PunchOut, and displaying status
+            Controls.Add(btnPunchIn);
+            Controls.Add(btnPunchOut);
+            Controls.Add(lblStatus);
+            Controls.Add(lblPunchInTime);
+            Controls.Add(lblPunchOutTime);
+
 
         }
+
+
 
         private void BtnPunchIn_Click(object sender, EventArgs e)
         {
@@ -75,6 +91,13 @@ namespace OOProjectBasedLeaning
             {
                 timeTracker.PunchIn(employeeId);
                 lblStatus.Text = "状態: 出勤中";
+
+                // 出勤時間を取得して表示
+                if (timeTracker is TimeTrackerModel model &&
+                    model.TryGetPunchInTime(employeeId, out DateTime time))
+                {
+                    lblPunchInTime.Text = $"出勤時間: {time:yyyy/MM/dd HH:mm}";
+                }
             }
             catch (Exception ex)
             {
@@ -82,21 +105,29 @@ namespace OOProjectBasedLeaning
             }
         }
 
+
         private void BtnPunchOut_Click(object sender, EventArgs e)
         {
             try
             {
                 timeTracker.PunchOut(employeeId);
                 lblStatus.Text = "状態: 退勤済み";
+
+                // 退勤時間を取得して表示
+                if (timeTracker is TimeTrackerModel model &&
+                    model.TryGetPunchOutTime(employeeId, out DateTime time))
+                {
+                    lblPunchOutTime.Text = $"退勤時間: {time:yyyy/MM/dd HH:mm}";
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "退勤エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            // Methods to handle user interactions like PunchIn, PunchOut, etc.
+
         }
 
-        // Methods to handle user interactions like PunchIn, PunchOut, etc.
-
     }
-
 }

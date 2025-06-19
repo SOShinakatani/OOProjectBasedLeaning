@@ -49,8 +49,8 @@ public class TimeTrackerModel : TimeTracker
 {
     private Company company = NullCompany.Instance;
 
-    private Dictionary<DateTime, Dictionary<int, DateTime>> timestamp4PunchIn = new();
-    private Dictionary<DateTime, Dictionary<int, DateTime>> timestamp4PunchOut = new();
+    private Dictionary<DateTime, Dictionary<int, List<DateTime>>> punchInHistory = new Dictionary<DateTime, Dictionary<int, List<DateTime>>>();
+    private Dictionary<DateTime, Dictionary<int, List<DateTime>>> punchOutHistory = new Dictionary<DateTime, Dictionary<int, List<DateTime>>>();
 
     private Mode mode = Mode.PunchIn;
 
@@ -69,39 +69,82 @@ public class TimeTrackerModel : TimeTracker
     {
         if (IsAtWork(employeeId))
         {
-            throw new InvalidOperationException("従業員はすでに出勤しています");
+            throw new InvalidOperationException("従業員はすでに出勤中です。");
         }
 
-        if (!timestamp4PunchIn.ContainsKey(DateTime.Today))
+        if (!punchInHistory.ContainsKey(DateTime.Today))
         {
-            timestamp4PunchIn[DateTime.Today] = new Dictionary<int, DateTime>();
+            punchInHistory[DateTime.Today] = new Dictionary<int, List<DateTime>>();
         }
 
-        timestamp4PunchIn[DateTime.Today][employeeId] = DateTime.Now;
+        if (!punchInHistory[DateTime.Today].ContainsKey(employeeId))
+        {
+            punchInHistory[DateTime.Today][employeeId] = new List<DateTime>();
+        }
+
+        punchInHistory[DateTime.Today][employeeId].Add(DateTime.Now);
     }
 
     public void PunchOut(int employeeId)
     {
         if (!IsAtWork(employeeId))
         {
-            throw new InvalidOperationException("従業員はすでに退勤しています");
+            throw new InvalidOperationException("まだ出勤していません。");
         }
 
-        if (!timestamp4PunchOut.ContainsKey(DateTime.Today))
+        if (!punchOutHistory.ContainsKey(DateTime.Today))
         {
-            timestamp4PunchOut[DateTime.Today] = new Dictionary<int, DateTime>();
+            punchOutHistory[DateTime.Today] = new Dictionary<int, List<DateTime>>();
         }
 
-        timestamp4PunchOut[DateTime.Today][employeeId] = DateTime.Now;
+        if (!punchOutHistory[DateTime.Today].ContainsKey(employeeId))
+        {
+            punchOutHistory[DateTime.Today][employeeId] = new List<DateTime>();
+        }
+
+        punchOutHistory[DateTime.Today][employeeId].Add(DateTime.Now);
     }
 
     public bool IsAtWork(int employeeId)
     {
-        return timestamp4PunchIn.ContainsKey(DateTime.Today)
-            && timestamp4PunchIn[DateTime.Today].ContainsKey(employeeId)
-            && (!timestamp4PunchOut.ContainsKey(DateTime.Today)
-                || !timestamp4PunchOut[DateTime.Today].ContainsKey(employeeId));
+        int inCount = punchInHistory.ContainsKey(DateTime.Today) && punchInHistory[DateTime.Today].ContainsKey(employeeId)
+            ? punchInHistory[DateTime.Today][employeeId].Count
+            : 0;
+
+        int outCount = punchOutHistory.ContainsKey(DateTime.Today) && punchOutHistory[DateTime.Today].ContainsKey(employeeId)
+            ? punchOutHistory[DateTime.Today][employeeId].Count
+            : 0;
+
+        return inCount > outCount;
     }
+
+    public bool TryGetPunchInTime(int employeeId, out DateTime time)
+    {
+        time = default;
+        if (punchInHistory.ContainsKey(DateTime.Today)
+            && punchInHistory[DateTime.Today].ContainsKey(employeeId)
+            && punchInHistory[DateTime.Today][employeeId].Count > 0)
+        {
+            time = punchInHistory[DateTime.Today][employeeId].Last();
+            return true;
+        }
+        return false;
+    }
+
+    public bool TryGetPunchOutTime(int employeeId, out DateTime time)
+    {
+        time = default;
+        if (punchOutHistory.ContainsKey(DateTime.Today)
+            && punchOutHistory[DateTime.Today].ContainsKey(employeeId)
+            && punchOutHistory[DateTime.Today][employeeId].Count > 0)
+        {
+            time = punchOutHistory[DateTime.Today][employeeId].Last();
+            return true;
+        }
+        return false;
+    }
+
+
 }
 
 //この下から
