@@ -54,6 +54,14 @@ public class TimeTrackerModel : TimeTracker
 
     private Mode mode = Mode.PunchIn;
 
+    public event EventHandler<string>? LogUpdated;
+
+    // --- イベント発火用メソッド ---
+    protected void OnLogUpdated(string message)
+    {
+        LogUpdated?.Invoke(this, message);
+    }
+
     private enum Mode
     {
         PunchIn,
@@ -83,6 +91,8 @@ public class TimeTrackerModel : TimeTracker
         }
 
         punchInHistory[DateTime.Today][employeeId].Add(DateTime.Now);
+
+        OnLogUpdated($"従業員 {employeeId} が出勤しました: {DateTime.Now:yyyy/MM/dd HH:mm:ss}");
     }
 
     public void PunchOut(int employeeId)
@@ -103,6 +113,8 @@ public class TimeTrackerModel : TimeTracker
         }
 
         punchOutHistory[DateTime.Today][employeeId].Add(DateTime.Now);
+
+        OnLogUpdated($"従業員 {employeeId} が退勤しました: {DateTime.Now:yyyy/MM/dd HH:mm:ss}");
     }
 
     public bool IsAtWork(int employeeId)
@@ -156,10 +168,11 @@ public class NullTimeTracker : TimeTracker, NullObject
 
         private NullTimeTracker()
         {
-
+            
         }
 
         public static TimeTracker Instance { get { return instance; } }
+
 
         public void PunchIn(int employeeId)
         {

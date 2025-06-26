@@ -3,21 +3,39 @@ namespace OOProjectBasedLeaning
 
     public partial class Form1 : Form
     {
+        private ListBox logListBox;
+        private TimeTrackerModel tracker;
 
         public Form1()
         {
 
             InitializeComponent();
 
-            // 従業員の作成
+            tracker = new TimeTrackerModel(NullCompany.Instance);
+
+            logListBox = new ListBox
+            {
+                Location = new System.Drawing.Point(10, 10),
+                Size = new System.Drawing.Size(400, 200)
+            };
+            this.Controls.Add(logListBox);
+
+            tracker.LogUpdated += Tracker_LogUpdated;
+
             new EmployeeCreatorForm().Show();
 
-            // 家
-            new HomeForm().Show();
+            var homeForm = new HomeForm(tracker);
+            homeForm.SetLogHandler(Tracker_LogUpdated); // ←これが大事！
+            homeForm.Show();
 
-            // 会社
             new CompanyForm().Show();
 
+        }
+
+        // ログ更新時に呼ばれるイベントハンドラ
+        private void Tracker_LogUpdated(object? sender, string logMessage)
+        {
+            logListBox.Items.Insert(0, logMessage);
         }
 
         private void Form1_Load(object sender, EventArgs e)

@@ -1,29 +1,29 @@
+using OOProjectBasedLeaning;
 namespace OOProjectBasedLeaning
 {
 
     public partial class HomeForm : Form
     {
+        private TimeTrackerModel tracker;
+        private TimeTrackerPanel panel;
 
-        public HomeForm()
+        public HomeForm(TimeTrackerModel tracker)
         {
 
             InitializeComponent();
 
-            // 1. 本物の会社（CompanyModel）を作る
+            this.tracker = tracker;
+
             var company = new CompanyModel("サンプル会社");
+            company.AddTimeTracker(tracker);
 
-            // 2. TimeTrackerModel にその会社を渡して作る
-            var timeTracker = new TimeTrackerModel(company);
+            panel = new TimeTrackerPanel(tracker, company);
+            this.Controls.Add(panel);
+        }
 
-            // 3. 会社側にも TimeTracker を登録しておく（双方向リンク）
-            company.AddTimeTracker(timeTracker);
-
-            // 4. パネルを作る（companyとtimeTrackerの両方を渡す）
-            var panel = new TimeTrackerPanel(timeTracker, company);
-
-            // 5. パネルをフォームに追加
-            this.Controls.Add(panel); ;
-
+        public void SetLogHandler(EventHandler<string> handler)
+        {
+            panel.LogUpdated += handler;
         }
 
         private void HomeForm_Load(object sender, EventArgs e)

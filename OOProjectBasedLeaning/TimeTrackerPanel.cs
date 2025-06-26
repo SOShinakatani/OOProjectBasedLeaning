@@ -87,6 +87,8 @@ namespace OOProjectBasedLeaning
 
         }
 
+        public event EventHandler<string>? LogUpdated;
+
         private void BtnPunchIn_Click(object sender, EventArgs e)
         {
             try
@@ -106,6 +108,7 @@ namespace OOProjectBasedLeaning
             {
                 MessageBox.Show(ex.Message, "出勤エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
         }
 
 
