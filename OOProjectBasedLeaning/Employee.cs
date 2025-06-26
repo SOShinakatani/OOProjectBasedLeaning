@@ -7,6 +7,8 @@ namespace OOProjectBasedLeaning.Models
     {
         int Id { get; }
         string Name { get; set; }
+
+        void AddCompany(CompanyModel companyModel);
     }
 
     public class EmployeeModel : Employee
@@ -15,7 +17,7 @@ namespace OOProjectBasedLeaning.Models
         public int Id { get; }
         public string Name { get; set; }
 
-        public EmployeeModel(string name)
+        public EmployeeModel(int v, string name)
         {
             Id = nextId++;
             Name = name;

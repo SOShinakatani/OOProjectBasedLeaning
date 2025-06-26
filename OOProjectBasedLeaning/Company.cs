@@ -1,15 +1,10 @@
-﻿using OOProjectBasedLeaning;
-using OOProjectBasedLeaning.Models;
+﻿using OOProjectBasedLeaning.Models;
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
 
 namespace OOProjectBasedLeaning
-{ 
-
-    /// <summary>
-    /// 会社の基本的な操作を定義するインターフェース。
-    /// </summary>
+{
     public interface Company : Model
     {
         Company AddTimeTracker(TimeTracker timeTracker);
@@ -21,36 +16,20 @@ namespace OOProjectBasedLeaning
         bool IsAtWork(Employee employee);
     }
 
-
-
-    /// <summary>
-    /// 実際の会社のモデルを表すクラス。
-    /// 従業員の管理や勤務時間の記録などを行います。
-    /// </summary>
     public class CompanyModel : ModelEntity, Company
     {
-        /// <summary>
-        /// 操作や処理の経過時間を追跡するためのトラッカーです。
-        /// </summary>
-        /// <remarks>
-        /// このフィールドは <see cref="NullTimeTracker"/> のインスタンスで初期化されます。
-        /// これは <see cref="TimeTracker"/> クラスの何もしない（no-op）実装です。
-        /// 時間の計測が必要な場合は、このフィールドをカスタムの <see cref="TimeTracker"/> 実装に置き換えてください。
-        /// </remarks>
         private TimeTracker timeTracker = NullTimeTracker.Instance;
-
-        /// <summary>
-        /// 従業員情報を保持する辞書。キーは従業員ID、値は <see cref="Employee"/> オブジェクトです。
-        /// </summary>
         private Dictionary<int, Employee> employees = new Dictionary<int, Employee>();
 
         public CompanyModel() : this(string.Empty) { }
 
         public CompanyModel(string name)
         {
+            Name = name;
             AcquireEmployees().ForEach(employee =>
             {
                 employee.AddCompany(this);
+                AddEmployee(employee);
             });
         }
 
@@ -67,7 +46,10 @@ namespace OOProjectBasedLeaning
 
         public Company AddEmployee(Employee employee)
         {
-            employees.Add(employee.Id, employee);
+            if (!employees.ContainsKey(employee.Id))
+            {
+                employees.Add(employee.Id, employee);
+            }
             return this;
         }
 
@@ -95,9 +77,10 @@ namespace OOProjectBasedLeaning
             return timeTracker.IsAtWork(FindEmployeeById(employee.Id).Id);
         }
 
-        private static List<Employee> staticEmployeeList = new List<Employee>()
+        private static readonly List<Employee> staticEmployeeList = new List<Employee>
         {
-            new Manager(1, "Manager1"), new Manager(2, "Manager2"),
+            new Manager(1, "Manager1"),
+            new Manager(2, "Manager2"),
             new EmployeeModel(1000, "Employee1000"),
             new EmployeeModel(2000, "Employee2000"),
             new EmployeeModel(3000, "Employee3000")
@@ -136,37 +119,18 @@ namespace OOProjectBasedLeaning
         }
     }
 
-    /// <summary>
-    /// ヌルオブジェクトパターンを用いた、何もしない会社の実装です。
-    /// </summary>
-    /// <remarks>
-    /// このクラスは <see cref="Company"/> インターフェースの安全な代替として機能し、
-    /// 実際の処理を行わずに、例外を回避するために使用されます。
-    /// </remarks>
     public class NullCompany : ModelEntity, Company, NullObject
     {
-        /// <summary>
-        /// 唯一のインスタンス（シングルトン）を保持します。
-        /// </summary>
-        private static Company instance = new NullCompany();
+        private static readonly Company instance = new NullCompany();
 
-        /// <summary>
-        /// プライベートコンストラクタ。外部からのインスタンス化を防ぎます。
-        /// </summary>
         private NullCompany() { }
 
-        /// <summary>
-        /// <see cref="NullCompany"/> の唯一のインスタンスを取得します。
-        /// </summary>
         public static Company Instance => instance;
 
-        /// <summary>
-        /// 会社名を取得または設定します。常に空文字列を返し、設定操作は無視されます。
-        /// </summary>
         public override string Name
         {
             get => string.Empty;
-            set { /* 何もしない */ }
+            set { /* do nothing */ }
         }
 
         public Company AddTimeTracker(TimeTracker timeTracker) => this;
