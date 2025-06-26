@@ -2,15 +2,16 @@
 
 namespace OOProjectBasedLeaning
 {
-    internal class Manager : Employee
+    public class Manager : EmployeeModel
     {
-        private int v1;
-        private string v2;
-
-        public Manager(int v1, string v2)
+        public Manager(int id, string name) : base(id, name)
         {
-            this.v1 = v1;
-            this.v2 = v2;
         }
+
+        public Manager(string name) : base(name)
+        {
+        }
+
+        // Manager 独自の機能を追加したい場合はここに記述
     }
 }
