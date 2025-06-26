@@ -11,6 +11,8 @@ namespace OOProjectBasedLeaning
 
             InitializeComponent();
 
+            this.Text = "èoëﬁãŒÉçÉO";
+
             tracker = new TimeTrackerModel(NullCompany.Instance);
 
             logListBox = new ListBox
