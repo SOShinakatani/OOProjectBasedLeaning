@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using static OOProjectBasedLeaning.EmployeePanel;
+using OOProjectBasedLeaning.Models;
 
 namespace OOProjectBasedLeaning
 {
-    public class EmployeePanel : Panel, Observer, Editable
+    public class EmployeePanel : Panel, Observer, EmployeePanel.Editable
     {
         private Employee employee;
         private EditMode editMode = EditMode.On;
@@ -69,12 +69,15 @@ namespace OOProjectBasedLeaning
             }
         }
 
-        private class EditMode
+        private enum EditMode
         {
-            public static readonly EditMode On = new EditMode();
-            public static readonly EditMode Off = new EditMode();
+            On,
+            Off
         }
+    }
 
-
+    public interface Observer
+    {
+        void Update(object sender);
     }
 }

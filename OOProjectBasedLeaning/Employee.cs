@@ -1,31 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace OOProjectBasedLeaning.Models
+﻿namespace OOProjectBasedLeaning.Models
 {
     public interface Employee
     {
         int Id { get; }
         string Name { get; set; }
 
-        void AddCompany(CompanyModel companyModel);
+        Employee AddCompany(Company company);
+        Employee RemoveCompany();
+        Company In();
+        void ClockIn();
+        void ClockOut();
+        bool IsAtWork();
     }
 
-    public class EmployeeModel : Employee
+    public class EmployeeModel : ModelEntity, Employee
     {
         private static int nextId = 1;
-        public int Id { get; }
-        public string Name { get; set; }
+        private Company company = NullCompany.Instance;
 
-        public EmployeeModel(int v, string name)
+        public int Id { get; }
+        public override string Name { get; set; }
+
+        public EmployeeModel(int id, string name)
         {
-            Id = nextId++;
+            Id = id;
             Name = name;
         }
 
-        public override string ToString()
+        public EmployeeModel(string name) : this(nextId++, name) { }
+
+        public override string ToString() => Name;
+
+        public Employee AddCompany(Company company)
         {
-            return Name;
+            this.company = company;
+            return this;
         }
+
+        public Employee RemoveCompany()
+        {
+            this.company = NullCompany.Instance;
+            return this;
+        }
+
+        public Company In() => company;
+
+        public void ClockIn() => company.ClockIn(this);
+
+        public void ClockOut() => company.ClockOut(this);
+
+        public bool IsAtWork() => company.IsAtWork(this);
+    }
+
+    public class Manager : EmployeeModel
+    {
+        public Manager(int id, string name) : base(id, name) { }
+        public Manager(string name) : base(name) { }
     }
 }
