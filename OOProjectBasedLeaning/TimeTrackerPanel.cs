@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OOProjectBasedLeaning;
+using OOProjectBasedLeaning.Models;
 
 
 
@@ -12,6 +13,8 @@ namespace OOProjectBasedLeaning
 
     public class TimeTrackerPanel : Panel
     {
+        private ComboBox employeeSelector;
+
         // フィールド（クラス内で使う変数）
         private TimeTracker timeTracker; // ← ここで一度だけ定義
         private Company company;
@@ -56,6 +59,33 @@ namespace OOProjectBasedLeaning
             };
             btnPunchOut.Click += BtnPunchOut_Click;
 
+            employeeSelector = new ComboBox
+            {
+                Location = new Point(230, 10),
+                Size = new Size(150, 30),
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+
+            if (company is CompanyModel model)
+            {
+                var field = typeof(CompanyModel)
+                    .GetField("employees", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field != null)
+                {
+                    var employeeDict = field.GetValue(model) as Dictionary<int, Employee>;
+                    if (employeeDict != null)
+                    {
+                        var employeeList = employeeDict.Values.ToList();
+                        employeeSelector.Items.AddRange(employeeList.ToArray());
+
+                        if (employeeSelector.Items.Count > 0)
+                        {
+                            employeeSelector.SelectedIndex = 0;
+                        }
+                    }
+                }
+            }
+
             // 状態表示ラベル
             lblStatus = new Label
             {
@@ -80,10 +110,10 @@ namespace OOProjectBasedLeaning
 
             Controls.Add(btnPunchIn);
             Controls.Add(btnPunchOut);
+            Controls.Add(employeeSelector);
             Controls.Add(lblStatus);
             Controls.Add(lblPunchInTime);
             Controls.Add(lblPunchOutTime);
-
 
         }
 
@@ -91,46 +121,48 @@ namespace OOProjectBasedLeaning
 
         private void BtnPunchIn_Click(object sender, EventArgs e)
         {
-            try
+            if (employeeSelector.SelectedItem is Employee employee)
             {
-                timeTracker.PunchIn(employeeId);
-                var employee = company.FindEmployeeById(employeeId);
-                lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
-
-                // 出勤時間を取得して表示
-                if (timeTracker is TimeTrackerModel model &&
-                    model.TryGetPunchInTime(employeeId, out DateTime time))
+                try
                 {
-                    lblPunchInTime.Text = $"出勤時間: {time:yyyy/MM/dd HH:mm}";
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "出勤エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+                    timeTracker.PunchIn(employee.Id);
+                    lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
 
+                    if (timeTracker is TimeTrackerModel model &&
+                        model.TryGetPunchInTime(employee.Id, out DateTime time))
+                    {
+                        lblPunchInTime.Text = $"出勤時間: {time:yyyy/MM/dd HH:mm}";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "出勤エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
         }
 
 
         private void BtnPunchOut_Click(object sender, EventArgs e)
         {
-            try
-            {
-                timeTracker.PunchOut(employeeId);
-                var employee = company.FindEmployeeById(employeeId);
-                lblStatus.Text = $"{employee.Name} さんは現在、退勤済み";
+            if (employeeSelector.SelectedItem is Employee employee)
+    {
+        try
+        {
+            timeTracker.PunchOut(employee.Id);
+            lblStatus.Text = $"{employee.Name} さんは現在、退勤済み";
 
-                // 退勤時間を取得して表示
-                if (timeTracker is TimeTrackerModel model &&
-                    model.TryGetPunchOutTime(employeeId, out DateTime time))
-                {
-                    lblPunchOutTime.Text = $"退勤時間: {time:yyyy/MM/dd HH:mm}";
-                }
-            }
-            catch (Exception ex)
+            if (timeTracker is TimeTrackerModel model &&
+                model.TryGetPunchOutTime(employee.Id, out DateTime time))
             {
-                MessageBox.Show(ex.Message, "退勤エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lblPunchOutTime.Text = $"退勤時間: {time:yyyy/MM/dd HH:mm}";
             }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "退勤エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
 
             // Methods to handle user interactions like PunchIn, PunchOut, etc.
 
