@@ -76,8 +76,5 @@ namespace OOProjectBasedLeaning
         }
     }
 
-    public interface Observer
-    {
-        void Update(object sender);
-    }
+    
 }
