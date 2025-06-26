@@ -18,40 +18,40 @@ namespace OOProjectBasedLeaning
 
         public CompanyForm()
         {
-            InitializeComponent();
+            //InitializeComponent();
 
-            company = new CompanyModel("MyCompany");
+            //company = new CompanyModel("MyCompany");
 
-            // タイムレコーダーのパネルを設置する
-            var clockInButton = new Button
-            {
-                Text = "出勤",
-                Location = new Point(20, 20),
-                Size = new Size(100, 30)
-            };
-            clockInButton.Click += (sender, e) =>
-            {
-                // 仮の従業員ID（例：1000）で出勤処理
-                var employee = company.FindEmployeeById(1000);
-                company.ClockIn(employee);
-                MessageBox.Show($"{employee.Name} が出勤しました。");
-            };
+            //// タイムレコーダーのパネルを設置する
+            //var clockInButton = new Button
+            //{
+            //    Text = "出勤",
+            //    Location = new Point(20, 20),
+            //    Size = new Size(100, 30)
+            //};
+            //clockInButton.Click += (sender, e) =>
+            //{
+            //    // 仮の従業員ID（例：1000）で出勤処理
+            //    var employee = company.FindEmployeeById(1000);
+            //    company.ClockIn(employee);
+            //    MessageBox.Show($"{employee.Name} が出勤しました。");
+            //};
 
-            var clockOutButton = new Button
-            {
-                Text = "退勤",
-                Location = new Point(140, 20),
-                Size = new Size(100, 30)
-            };
-            clockOutButton.Click += (sender, e) =>
-            {
-                var employee = company.FindEmployeeById(1000);
-                company.ClockOut(employee);
-                MessageBox.Show($"{employee.Name} が退勤しました。");
-            };
+            //var clockOutButton = new Button
+            //{
+            //    Text = "退勤",
+            //    Location = new Point(140, 20),
+            //    Size = new Size(100, 30)
+            //};
+            //clockOutButton.Click += (sender, e) =>
+            //{
+            //    var employee = company.FindEmployeeById(1000);
+            //    company.ClockOut(employee);
+            //    MessageBox.Show($"{employee.Name} が退勤しました。");
+            //};
 
-            this.Controls.Add(clockInButton);
-            this.Controls.Add(clockOutButton);
+            //this.Controls.Add(clockInButton);
+            //this.Controls.Add(clockOutButton);
 
 
         }
