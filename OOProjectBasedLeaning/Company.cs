@@ -8,7 +8,7 @@ namespace OOProjectBasedLeaning
     public interface Company : Model
     {
         Company AddTimeTracker(TimeTracker timeTracker);
-        Employee FindEmployeeById(int id);
+        Employee FindEmployeeByName(string name);
         Company AddEmployee(Employee employee);
         Company RemoveEmployee(Employee employee);
         void ClockIn(Employee employee);
@@ -19,7 +19,7 @@ namespace OOProjectBasedLeaning
     public class CompanyModel : ModelEntity, Company
     {
         private TimeTracker timeTracker = NullTimeTracker.Instance;
-        private Dictionary<int, Employee> employees = new Dictionary<int, Employee>();
+        private List<Employee> employees = new List<Employee>();
 
         public CompanyModel() : this(string.Empty) { }
 
@@ -39,45 +39,42 @@ namespace OOProjectBasedLeaning
             return this;
         }
 
-        public Employee FindEmployeeById(int id)
+        public Employee FindEmployeeByName(string name)
         {
-            return employees.GetValueOrDefault(id, NullEmployee.Instance);
+            return employees.Find(e => e.Name == name) ?? NullEmployee.Instance;
         }
 
         public Company AddEmployee(Employee employee)
         {
-            if (!employees.ContainsKey(employee.Id))
+            if (!employees.Exists(e => e.Name == employee.Name))
             {
-                employees.Add(employee.Id, employee);
+                employees.Add(employee);
             }
             return this;
         }
 
         public Company RemoveEmployee(Employee employee)
         {
-            if (employees.ContainsKey(employee.Id))
-            {
-                employees.Remove(employee.Id);
-            }
+            employees.RemoveAll(e => e.Name == employee.Name);
             return this;
         }
 
         public void ClockIn(Employee employee)
         {
-            timeTracker.PunchIn(FindEmployeeById(employee.Id).Id);
+            timeTracker.PunchIn(employee.Id);
         }
 
         public void ClockOut(Employee employee)
         {
-            timeTracker.PunchOut(FindEmployeeById(employee.Id).Id);
+            timeTracker.PunchOut(employee.Id);
         }
 
         public bool IsAtWork(Employee employee)
         {
-            return timeTracker.IsAtWork(FindEmployeeById(employee.Id).Id);
+            return timeTracker.IsAtWork(employee.Id);
         }
 
-        private static readonly List<Employee> staticEmployeeList = new List<Employee>
+        public static List<Employee> StaticEmployeeList { get; } = new List<Employee>
         {
             new Manager(1, "Manager1"),
             new Manager(2, "Manager2"),
@@ -95,9 +92,9 @@ namespace OOProjectBasedLeaning
                 XDocument doc = XDocument.Load("employees.xml");
                 foreach (var element in doc.Descendants("Employee"))
                 {
-                    int id = int.Parse(element.Element("Id")?.Value ?? "0");
                     string name = element.Element("Name")?.Value ?? "Unknown";
                     string role = element.Element("Role")?.Value ?? "Employee";
+                    int id = GenerateId(name);
 
                     if (role == "Manager")
                     {
@@ -112,10 +109,15 @@ namespace OOProjectBasedLeaning
             catch (Exception ex)
             {
                 Console.WriteLine("Error loading employees: " + ex.Message);
-                employeeList = staticEmployeeList;
+                employeeList = StaticEmployeeList;
             }
 
             return employeeList;
+        }
+
+        private int GenerateId(string name)
+        {
+            return Math.Abs(name.GetHashCode()); // 簡易的なID生成
         }
     }
 
@@ -130,12 +132,12 @@ namespace OOProjectBasedLeaning
         public override string Name
         {
             get => string.Empty;
-            set { /* do nothing */ }
+            set { }
         }
 
         public Company AddTimeTracker(TimeTracker timeTracker) => this;
 
-        public Employee FindEmployeeById(int id) => NullEmployee.Instance;
+        public Employee FindEmployeeByName(string name) => NullEmployee.Instance;
 
         public Company AddEmployee(Employee employee) => this;
 
