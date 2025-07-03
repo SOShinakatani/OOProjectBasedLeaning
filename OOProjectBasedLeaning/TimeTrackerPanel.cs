@@ -40,7 +40,7 @@ namespace OOProjectBasedLeaning
         {
 
             // パネルサイズを適当に設定
-            this.Size = new Size(400, 800);
+            this.Size = new Size(600, 500);
 
             // 出勤ボタン
             btnPunchIn = new Button
@@ -64,8 +64,8 @@ namespace OOProjectBasedLeaning
             employeeSelector = new ComboBox
             {
                 //プルダウンリストの押すところの横幅を広げたい
-                Location = new Point(230, 10),
-                Size = new Size(150, 30),
+                Location = new Point(350, 10),
+                Size = new Size(250, 30),
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
 
