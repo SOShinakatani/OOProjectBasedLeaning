@@ -101,7 +101,7 @@ namespace OOProjectBasedLeaning
             Controls.Add(lblPunchInTime);
             Controls.Add(lblPunchOutTime);
 
-            // 👇 ComboBox に従業員を追加（ラベルが null じゃない今のタイミングでOK）
+            //  ComboBox に従業員を追加
             if (company is CompanyModel model)
             {
                 var field = typeof(CompanyModel)
@@ -188,6 +188,10 @@ namespace OOProjectBasedLeaning
             {
                lblPunchInTime.Text = $"出勤時間: {time.Value:yyyy/MM/dd HH:mm}";
             }
+            else
+            {
+                lblPunchInTime.Text = "出勤時間: -";
+            }
         }
 
         private void ShowPunchOutTime(Employee employee)
@@ -196,6 +200,10 @@ namespace OOProjectBasedLeaning
             if (time.HasValue)
             {
                 lblPunchOutTime.Text = $"退勤時間: {time.Value:yyyy/MM/dd HH:mm}";
+            }
+            else
+            {
+                lblPunchOutTime.Text = "退勤時間: -";
             }
         }
 
