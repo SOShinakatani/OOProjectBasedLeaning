@@ -38,6 +38,7 @@ namespace OOProjectBasedLeaning
 
         private void InitializeComponent()
         {
+
             // パネルサイズを適当に設定
             this.Size = new Size(400, 800);
 
@@ -68,27 +69,10 @@ namespace OOProjectBasedLeaning
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
 
-            if (company is CompanyModel model)
-            {
-                var field = typeof(CompanyModel)
-                    .GetField("employees", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (field != null)
-                {
-                    var employeeDict = field.GetValue(model) as Dictionary<int, Employee>;
-                    if (employeeDict != null)
-                    {
-                        var employeeList = employeeDict.Values.ToList();
-                        employeeSelector.Items.AddRange(employeeList.ToArray());
+            employeeSelector.SelectedIndexChanged += EmployeeSelector_SelectedIndexChanged;
 
-                        if (employeeSelector.Items.Count > 0)
-                        {
-                            employeeSelector.SelectedIndex = 0;
-                        }
-                    }
-                }
-            }
 
-            // 状態表示ラベル
+            // ラベル生成・追加
             lblStatus = new Label
             {
                 Text = "状態: 未出勤",
@@ -116,6 +100,28 @@ namespace OOProjectBasedLeaning
             Controls.Add(lblStatus);
             Controls.Add(lblPunchInTime);
             Controls.Add(lblPunchOutTime);
+
+            // 👇 ComboBox に従業員を追加（ラベルが null じゃない今のタイミングでOK）
+            if (company is CompanyModel model)
+            {
+                var field = typeof(CompanyModel)
+                    .GetField("employees", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (field != null)
+                {
+                    var employeeDict = field.GetValue(model) as Dictionary<int, Employee>;
+                    if (employeeDict != null)
+                    {
+                        var employeeList = employeeDict.Values.ToList();
+                        employeeSelector.Items.AddRange(employeeList.ToArray());
+
+                        if (employeeSelector.Items.Count > 0)
+                        {
+                            employeeSelector.SelectedIndex = 0;
+                        }
+                    }
+                }
+            }
+
 
         }
 
@@ -176,43 +182,65 @@ namespace OOProjectBasedLeaning
 
         // Methods to handle user interactions like PunchIn, PunchOut, etc.
         private void ShowPunchInTime(Employee employee)
-    {
-        DateTime? time = GetPunchInTimeFromTracker(employee);
-        if (time.HasValue)
         {
-           lblPunchInTime.Text = $"出勤時間: {time.Value:yyyy/MM/dd HH:mm}";
+            DateTime? time = GetPunchInTimeFromTracker(employee);
+            if (time.HasValue)
+            {
+               lblPunchInTime.Text = $"出勤時間: {time.Value:yyyy/MM/dd HH:mm}";
+            }
         }
-    }
 
-    private void ShowPunchOutTime(Employee employee)
-    {
-        DateTime? time = GetPunchOutTimeFromTracker(employee);
-        if (time.HasValue)
+        private void ShowPunchOutTime(Employee employee)
         {
-            lblPunchOutTime.Text = $"退勤時間: {time.Value:yyyy/MM/dd HH:mm}";
+            DateTime? time = GetPunchOutTimeFromTracker(employee);
+            if (time.HasValue)
+            {
+                lblPunchOutTime.Text = $"退勤時間: {time.Value:yyyy/MM/dd HH:mm}";
+            }
         }
-    }
 
-    private DateTime? GetPunchInTimeFromTracker(Employee employee)
-    {
-        if (timeTracker is TimeTrackerModel model &&
-            model.TryGetPunchInTime(employee.Id, out DateTime time))
+        private DateTime? GetPunchInTimeFromTracker(Employee employee)
         {
-            return time;
+            if (timeTracker is TimeTrackerModel model &&
+                model.TryGetPunchInTime(employee.Id, out DateTime time))
+            {
+                return time;
+            }
+            return null;
         }
-        return null;
-    }
 
-    private DateTime? GetPunchOutTimeFromTracker(Employee employee)
-    {
-        if (timeTracker is TimeTrackerModel model &&
-           model.TryGetPunchOutTime(employee.Id, out DateTime time))
+        private DateTime? GetPunchOutTimeFromTracker(Employee employee)
         {
-             return time;
+            if (timeTracker is TimeTrackerModel model &&
+               model.TryGetPunchOutTime(employee.Id, out DateTime time))
+            {
+                 return time;
+            }
+            return null;
         }
-        return null;
-    }
- 
+
+        private void EmployeeSelector_SelectedIndexChanged(object? sender, EventArgs e)
+        {
+            if (employeeSelector.SelectedItem is Employee employee)
+            {
+                UpdateStatusDisplay(employee);
+            }
+        }
+
+        private void UpdateStatusDisplay(Employee employee)
+        {
+            if (employee.IsAtWork())
+            {
+                lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
+            }
+            else
+            {
+                lblStatus.Text = $"{employee.Name} さんは現在、退勤済み";
+            }
+            ShowPunchInTime(employee);
+            ShowPunchOutTime(employee);
+        }
+
 
     }
 
