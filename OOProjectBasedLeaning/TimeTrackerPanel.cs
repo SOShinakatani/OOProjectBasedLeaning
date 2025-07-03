@@ -135,7 +135,7 @@ namespace OOProjectBasedLeaning
                 {
                     timeTracker.PunchIn(employee.Id);
 
-                    if (employee.IsAtWork())
+                    if (timeTracker.IsAtWork(employee.Id))
                     {
                         lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
                     }
@@ -162,7 +162,7 @@ namespace OOProjectBasedLeaning
                 {
                     timeTracker.PunchOut(employee.Id);
 
-                    if (employee.IsAtWork())
+                    if (timeTracker.IsAtWork(employee.Id))
                     {
                         lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
                     }
@@ -237,7 +237,7 @@ namespace OOProjectBasedLeaning
 
         private void UpdateStatusDisplay(Employee employee)
         {
-            if (employee.IsAtWork())
+            if (timeTracker.IsAtWork(employee.Id))
             {
                 lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
             }

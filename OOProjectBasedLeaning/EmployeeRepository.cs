@@ -1,23 +1,24 @@
 ﻿using System.Collections.Generic;
-using OOProjectBasedLeaning.Models;
 
-namespace OOProjectBasedLeaning
+namespace OOProjectBasedLeaning.Models
 {
     public static class EmployeeRepository
     {
-        private static List<Employee> employees = new List<Employee>();
+        private static readonly List<EmployeeModel> employees = new List<EmployeeModel>();
 
-        public static void Add(Employee employee)
+        public static void Add(EmployeeModel employee)
         {
-            if (employee != null && !employees.Contains(employee))
-            {
-                employees.Add(employee);
-            }
+            employees.Add(employee);
         }
 
-        public static List<Employee> GetAll()
+        public static List<EmployeeModel> GetAll()
         {
-            return new List<Employee>(employees);
+            return new List<EmployeeModel>(employees);
+        }
+
+        public static void Clear()
+        {
+            employees.Clear();
         }
     }
 }

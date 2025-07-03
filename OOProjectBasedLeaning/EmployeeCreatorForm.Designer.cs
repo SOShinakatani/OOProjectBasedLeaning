@@ -27,7 +27,7 @@ namespace OOProjectBasedLeaning
             SuspendLayout();
 
             // nameTextBox
-            nameTextBox.Location = new Point(50, 50);
+            new Point(50, 50);
             nameTextBox.Size = new Size(300, 27);
             nameTextBox.Name = "nameTextBox";
             nameTextBox.TabIndex = 0;

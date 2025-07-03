@@ -1,60 +1,21 @@
 ﻿namespace OOProjectBasedLeaning.Models
 {
-    public interface Employee
+    public class Employee
     {
-        int Id { get; }
-        string Name { get; set; }
+        public int Id { get; private set; }
+        public string Name { get; private set; }
 
-        Employee AddCompany(Company company);
-        Employee RemoveCompany();
-        Company In();
-        void ClockIn();
-        void ClockOut();
-        bool IsAtWork();
-    }
-
-    public class EmployeeModel : ModelEntity, Employee
-    {
-        private static int nextId = 1;
-        private Company company = NullCompany.Instance;
-
-        public int Id { get; }
-        public override string Name { get; set; }
-
-        public EmployeeModel(int id, string name)
+        public Employee(int id, string name)
         {
             Id = id;
-            Name = name;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
-        public EmployeeModel(string name) : this(nextId++, name) { }
+        public virtual void AddCompany(Company company) { }
 
-        public override string ToString() => Name;
-
-        public Employee AddCompany(Company company)
+        public override string ToString()
         {
-            this.company = company;
-            return this;
+            return $"{Name} (ID: {Id})";
         }
-
-        public Employee RemoveCompany()
-        {
-            this.company = NullCompany.Instance;
-            return this;
-        }
-
-        public Company In() => company;
-
-        public void ClockIn() => company.ClockIn(this);
-
-        public void ClockOut() => company.ClockOut(this);
-
-        public bool IsAtWork() => company.IsAtWork(this);
-    }
-
-    public class Manager : EmployeeModel
-    {
-        public Manager(int id, string name) : base(id, name) { }
-        public Manager(string name) : base(name) { }
     }
 }

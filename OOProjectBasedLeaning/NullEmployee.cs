@@ -1,26 +1,21 @@
 ﻿namespace OOProjectBasedLeaning.Models
 {
-    public class NullEmployee : ModelEntity, Employee, NullObject
+    public class NullEmployee : Employee, NullObject
     {
-        private static readonly Employee instance = new NullEmployee();
+        private static readonly NullEmployee instance = new NullEmployee();
 
-        private NullEmployee() { }
+        private NullEmployee() : base(0, string.Empty) { }
 
         public static Employee Instance => instance;
 
-        public int Id => 0;
+        public override void AddCompany(Company company) { }
 
-        public override string Name
-        {
-            get => string.Empty;
-            set { }
-        }
-
-        public Employee AddCompany(Company company) => this;
-        public Employee RemoveCompany() => this;
         public Company In() => NullCompany.Instance;
+
         public void ClockIn() { }
+
         public void ClockOut() { }
-        public bool IsAtWork() => false;
+
+        public bool IsAtWork() => false; // これは削除してOK（Employeeにない）
     }
 }

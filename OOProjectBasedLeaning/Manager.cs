@@ -1,17 +1,11 @@
-﻿using OOProjectBasedLeaning.Models;
-
-namespace OOProjectBasedLeaning
+﻿namespace OOProjectBasedLeaning.Models
 {
-    public class Manager : EmployeeModel
+    public class Manager : Employee
     {
         public Manager(int id, string name) : base(id, name)
         {
         }
 
-        public Manager(string name) : base(name)
-        {
-        }
-
-        // Manager 独自の機能を追加したい場合はここに記述
+        // Manager 固有の機能があればここに追加
     }
 }
