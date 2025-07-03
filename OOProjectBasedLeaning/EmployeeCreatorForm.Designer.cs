@@ -72,11 +72,11 @@ namespace OOProjectBasedLeaning
         }
 
 
-        private void CreateGuestEvent(object sender, EventArgs e)
-        {
-            string employeeName = nameTextBox.Text;
-            MessageBox.Show($"従業員「{employeeName}」を作成しました。");
-        }
+        //private void CreateGuestEvent(object sender, EventArgs e)
+        //{
+        //    string employeeName = nameTextBox.Text;
+        //    MessageBox.Show($"従業員「{employeeName}」を作成しました。");
+        //}
 
 
         #endregion

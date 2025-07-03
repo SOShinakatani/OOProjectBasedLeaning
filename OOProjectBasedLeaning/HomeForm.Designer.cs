@@ -10,11 +10,6 @@ namespace OOProjectBasedLeaning
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-        private void HomeForm_Load(object sender, EventArgs e)
-        {
-            // 必要な初期処理を書く（なければ空でもOK）
-            Console.WriteLine("HomeForm がロードされました");
-        }
 
         /// <summary>
         /// Clean up any resources being used.
@@ -52,7 +47,7 @@ namespace OOProjectBasedLeaning
 
         #endregion
 
-        /// <summary>
+       
         /// イベント: フォームロード時の処理
         /// </summary>
         private void HomeForm_Load(object sender, EventArgs e)
@@ -60,6 +55,7 @@ namespace OOProjectBasedLeaning
             try
             {
                 // 初期化処理などをここに記述
+                Console.WriteLine("HomeForm がロードされました");
                 MessageBox.Show("HomeForm が正常にロードされました。", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
