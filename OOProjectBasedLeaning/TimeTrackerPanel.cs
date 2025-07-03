@@ -19,7 +19,6 @@ namespace OOProjectBasedLeaning
         {
             this.timeTracker = timeTracker;
             this.company = company;
-
             InitializeComponent();
         }
 
@@ -27,10 +26,32 @@ namespace OOProjectBasedLeaning
         {
             this.Size = new Size(400, 150);
 
-            employeeComboBox = new ComboBox
+            // パネルサイズを適当に設定
+            this.Size = new Size(600, 500);
+
+            // 出勤ボタン
+            btnPunchIn = new Button
             {
                 Location = new Point(10, 10),
-                Size = new Size(200, 30),
+                Size = new Size(100, 30)
+            };
+            btnPunchIn.Click += BtnPunchIn_Click;
+
+            // 退勤ボタン
+            btnPunchOut = new Button
+            {
+                Text = "退勤",
+                Location = new Point(120, 10),
+                Size = new Size(100, 30)
+            };
+            btnPunchOut.Click += BtnPunchOut_Click;
+
+            //プルダウンリスト
+            employeeSelector = new ComboBox
+            {
+                //プルダウンリストの押すところの横幅を広げたい
+                Location = new Point(230, 10),
+                Size = new Size(150, 30),
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
             this.Controls.Add(employeeComboBox);

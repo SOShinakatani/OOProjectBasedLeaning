@@ -77,7 +77,9 @@ public class TimeTrackerModel : TimeTracker
     {
         if (IsAtWork(employeeId))
         {
-            throw new InvalidOperationException("従業員はすでに出勤中です。");
+            var msg = $"⚠️ 従業員 {employeeId} はすでに出勤済みです。";
+            OnLogUpdated(msg); // ← ここでログ通知！
+            throw new InvalidOperationException(msg);
         }
 
         if (!punchInHistory.ContainsKey(DateTime.Today))
@@ -99,7 +101,9 @@ public class TimeTrackerModel : TimeTracker
     {
         if (!IsAtWork(employeeId))
         {
-            throw new InvalidOperationException("まだ出勤していません。");
+            var msg = $"⚠️ 従業員 {employeeId} はすでに退勤済みです。";
+            OnLogUpdated(msg); // ← ログに残す
+            throw new InvalidOperationException(msg);
         }
 
         if (!punchOutHistory.ContainsKey(DateTime.Today))
