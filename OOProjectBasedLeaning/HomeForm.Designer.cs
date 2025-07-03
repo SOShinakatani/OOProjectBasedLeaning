@@ -10,6 +10,11 @@ namespace OOProjectBasedLeaning
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+        private void HomeForm_Load(object sender, EventArgs e)
+        {
+            // 必要な初期処理を書く（なければ空でもOK）
+            Console.WriteLine("HomeForm がロードされました");
+        }
 
         /// <summary>
         /// Clean up any resources being used.
