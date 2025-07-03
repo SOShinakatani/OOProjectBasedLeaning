@@ -39,8 +39,8 @@ namespace OOProjectBasedLeaning
             var creatorForm = new EmployeeCreatorForm(homeForm);
             creatorForm.Show();
 
-            // CompanyForm を表示
-            new CompanyForm().Show();
+            //// CompanyForm を表示
+            //new CompanyForm().Show();
         }
 
         // ログ更新時に呼ばれるイベントハンドラ
