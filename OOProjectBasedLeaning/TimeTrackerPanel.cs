@@ -128,19 +128,22 @@ namespace OOProjectBasedLeaning
                 try
                 {
                     timeTracker.PunchIn(employee.Id);
-                    lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
 
-                    if (timeTracker is TimeTrackerModel model &&
-                        model.TryGetPunchInTime(employee.Id, out DateTime time))
+                    if (employee.IsAtWork())
                     {
-                        lblPunchInTime.Text = $"出勤時間: {time:yyyy/MM/dd HH:mm}";
+                        lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
                     }
+                    else
+                    {
+                        lblStatus.Text = $"{employee.Name} さんは現在、退勤済み";
+                    }
+
+                    ShowPunchInTime(employee);
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message, "出勤エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-
             }
         }
 
@@ -148,27 +151,71 @@ namespace OOProjectBasedLeaning
         private void BtnPunchOut_Click(object sender, EventArgs e)
         {
             if (employeeSelector.SelectedItem is Employee employee)
-    {
-        try
-        {
-            timeTracker.PunchOut(employee.Id);
-            lblStatus.Text = $"{employee.Name} さんは現在、退勤済み";
-
-            if (timeTracker is TimeTrackerModel model &&
-                model.TryGetPunchOutTime(employee.Id, out DateTime time))
             {
-                lblPunchOutTime.Text = $"退勤時間: {time:yyyy/MM/dd HH:mm}";
+                try
+                {
+                    timeTracker.PunchOut(employee.Id);
+
+                    if (employee.IsAtWork())
+                    {
+                        lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
+                    }
+                    else
+                    {
+                        lblStatus.Text = $"{employee.Name} さんは現在、退勤済み";
+                    }
+
+                    ShowPunchOutTime(employee);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "退勤エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
-        catch (Exception ex)
+
+        // Methods to handle user interactions like PunchIn, PunchOut, etc.
+        private void ShowPunchInTime(Employee employee)
+    {
+        DateTime? time = GetPunchInTimeFromTracker(employee);
+        if (time.HasValue)
         {
-            MessageBox.Show(ex.Message, "退勤エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+           lblPunchInTime.Text = $"出勤時間: {time.Value:yyyy/MM/dd HH:mm}";
         }
     }
 
-            // Methods to handle user interactions like PunchIn, PunchOut, etc.
-
+    private void ShowPunchOutTime(Employee employee)
+    {
+        DateTime? time = GetPunchOutTimeFromTracker(employee);
+        if (time.HasValue)
+        {
+            lblPunchOutTime.Text = $"退勤時間: {time.Value:yyyy/MM/dd HH:mm}";
         }
+    }
+
+    private DateTime? GetPunchInTimeFromTracker(Employee employee)
+    {
+        if (timeTracker is TimeTrackerModel model &&
+            model.TryGetPunchInTime(employee.Id, out DateTime time))
+        {
+            return time;
+        }
+        return null;
+    }
+
+    private DateTime? GetPunchOutTimeFromTracker(Employee employee)
+    {
+        if (timeTracker is TimeTrackerModel model &&
+           model.TryGetPunchOutTime(employee.Id, out DateTime time))
+        {
+             return time;
+        }
+        return null;
+    }
+ 
 
     }
+
 }
+
+
