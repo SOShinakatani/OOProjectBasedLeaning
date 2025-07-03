@@ -184,27 +184,13 @@ namespace OOProjectBasedLeaning
         private void ShowPunchInTime(Employee employee)
         {
             DateTime? time = GetPunchInTimeFromTracker(employee);
-            if (time.HasValue)
-            {
-               lblPunchInTime.Text = $"出勤時間: {time.Value:yyyy/MM/dd HH:mm}";
-            }
-            else
-            {
-                lblPunchInTime.Text = "出勤時間: -";
-            }
+            lblPunchInTime.Text = $"出勤時間: {TimeDisplayFormatter.ToDisplayString(time)}";
         }
 
         private void ShowPunchOutTime(Employee employee)
         {
             DateTime? time = GetPunchOutTimeFromTracker(employee);
-            if (time.HasValue)
-            {
-                lblPunchOutTime.Text = $"退勤時間: {time.Value:yyyy/MM/dd HH:mm}";
-            }
-            else
-            {
-                lblPunchOutTime.Text = "退勤時間: -";
-            }
+            lblPunchOutTime.Text = $"退勤時間: {TimeDisplayFormatter.ToDisplayString(time)}";
         }
 
         private DateTime? GetPunchInTimeFromTracker(Employee employee)
@@ -249,6 +235,21 @@ namespace OOProjectBasedLeaning
             ShowPunchOutTime(employee);
         }
 
+        // ヘルパークラス（TimeDisplayFormatter.csなどに分けてもOK）
+        static class TimeDisplayFormatter
+        {
+            public static string ToDisplayString(DateTime? time)
+            {
+                if (time.HasValue)
+                {
+                    return time.Value.ToString("yyyy/MM/dd HH:mm");
+                }
+                else
+                {
+                    return "-";
+                }
+            }
+        }
 
     }
 
