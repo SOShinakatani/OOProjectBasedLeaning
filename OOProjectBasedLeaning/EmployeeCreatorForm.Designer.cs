@@ -1,17 +1,14 @@
-﻿
+﻿using System.Drawing;
+using System.Windows.Forms;
+
 namespace OOProjectBasedLeaning
 {
     partial class EmployeeCreatorForm
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
+        private TextBox nameTextBox;
+        private Button createButton;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -21,66 +18,39 @@ namespace OOProjectBasedLeaning
             base.Dispose(disposing);
         }
 
-        #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private TextBox nameTextBox;
-
         private void InitializeComponent()
         {
-            //button1 = new Button();
-            nameTextBox = new TextBox(); // ← 追加
+            components = new System.ComponentModel.Container();
+            nameTextBox = new TextBox();
+            createButton = new Button();
+
             SuspendLayout();
 
-            // 
             // nameTextBox
-            // 
             nameTextBox.Location = new Point(50, 50);
             nameTextBox.Size = new Size(300, 27);
             nameTextBox.Name = "nameTextBox";
-            nameTextBox.TabIndex = 1;
+            nameTextBox.TabIndex = 0;
 
-            // 
-            // button1
-            // 
-            //button1.Location = new Point(491, 16);
-            //button1.Margin = new Padding(3, 4, 3, 4);
-            //button1.Name = "button1";
-            //button1.Size = new Size(102, 41);
-            //button1.TabIndex = 0;
-            //button1.Text = "従業員の作成";
-            //button1.UseVisualStyleBackColor = true;
-            //button1.Click += CreateGuestEvent;
+            // createButton
+            createButton.Location = new Point(50, 100);
+            createButton.Size = new Size(120, 30);
+            createButton.Name = "createButton";
+            createButton.Text = "従業員を作成";
+            createButton.UseVisualStyleBackColor = true;
+            createButton.Click += CreateGuestEvent;
 
-            // 
             // EmployeeCreatorForm
-            // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(607, 419);
-            Controls.Add(button1);
-            Controls.Add(nameTextBox); // ← 追加
-            Margin = new Padding(3, 4, 3, 4);
+            ClientSize = new Size(400, 200);
+            Controls.Add(nameTextBox);
+            Controls.Add(createButton);
             Name = "EmployeeCreatorForm";
-            Text = "EmployeeCreatorForm";
+            Text = "従業員作成フォーム";
             Load += EmployeeCreatorForm_Load;
             ResumeLayout(false);
-            PerformLayout(); // ← Layout更新
+            PerformLayout();
         }
-
-
-        //private void CreateGuestEvent(object sender, EventArgs e)
-        //{
-        //    string employeeName = nameTextBox.Text;
-        //    MessageBox.Show($"従業員「{employeeName}」を作成しました。");
-        //}
-
-
-        #endregion
-
-        private Button button1;
     }
 }
