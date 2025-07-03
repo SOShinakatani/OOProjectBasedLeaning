@@ -1,14 +1,18 @@
-﻿namespace OOProjectBasedLeaning
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace OOProjectBasedLeaning
 {
-    partial class HomeForm
+    public partial class HomeForm : Form
     {
         /// <summary>
-        ///  Required designer variable.
+        /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
         /// <summary>
-        ///  Clean up any resources being used.
+        /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
@@ -23,8 +27,8 @@
         #region Windows Form Designer generated code
 
         /// <summary>
-        ///  Required method for Designer support - do not modify
-        ///  the contents of this method with the code editor.
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
         {
@@ -42,5 +46,21 @@
         }
 
         #endregion
+
+        /// <summary>
+        /// イベント: フォームロード時の処理
+        /// </summary>
+        private void HomeForm_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                // 初期化処理などをここに記述
+                MessageBox.Show("HomeForm が正常にロードされました。", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"エラーが発生しました: {ex.Message}", "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
