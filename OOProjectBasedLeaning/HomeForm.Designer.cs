@@ -47,7 +47,7 @@ namespace OOProjectBasedLeaning
 
         #endregion
 
-        /// <summary>
+       
         /// イベント: フォームロード時の処理
         /// </summary>
         private void HomeForm_Load(object sender, EventArgs e)
@@ -55,6 +55,7 @@ namespace OOProjectBasedLeaning
             try
             {
                 // 初期化処理などをここに記述
+                Console.WriteLine("HomeForm がロードされました");
                 MessageBox.Show("HomeForm が正常にロードされました。", "情報", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
