@@ -24,38 +24,19 @@ namespace OOProjectBasedLeaning
 
         private void InitializeComponent()
         {
-            this.Size = new Size(400, 150);
-
             // パネルサイズを適当に設定
             this.Size = new Size(600, 500);
 
-            // 出勤ボタン
-            btnPunchIn = new Button
+            // プルダウンリスト（社員選択）
+            employeeComboBox = new ComboBox
             {
                 Location = new Point(10, 10),
-                Size = new Size(100, 30)
-            };
-            btnPunchIn.Click += BtnPunchIn_Click;
-
-            // 退勤ボタン
-            btnPunchOut = new Button
-            {
-                Text = "退勤",
-                Location = new Point(120, 10),
-                Size = new Size(100, 30)
-            };
-            btnPunchOut.Click += BtnPunchOut_Click;
-
-            //プルダウンリスト
-            employeeSelector = new ComboBox
-            {
-                //プルダウンリストの押すところの横幅を広げたい
-                Location = new Point(230, 10),
-                Size = new Size(150, 30),
+                Size = new Size(200, 30),
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
             this.Controls.Add(employeeComboBox);
 
+            // 出勤ボタン
             punchInButton = new Button
             {
                 Text = "出勤",
@@ -65,6 +46,7 @@ namespace OOProjectBasedLeaning
             punchInButton.Click += PunchInButton_Click;
             this.Controls.Add(punchInButton);
 
+            // 退勤ボタン
             punchOutButton = new Button
             {
                 Text = "退勤",
@@ -81,7 +63,7 @@ namespace OOProjectBasedLeaning
             {
                 try
                 {
-                    timeTracker.PunchIn(employee.Id); // 修正点①
+                    timeTracker.PunchIn(employee.Id);
                     LogUpdated?.Invoke(this, $"{employee.Name} が出勤しました。");
                 }
                 catch (Exception ex)
@@ -97,7 +79,7 @@ namespace OOProjectBasedLeaning
             {
                 try
                 {
-                    timeTracker.PunchOut(employee.Id); // 修正点②
+                    timeTracker.PunchOut(employee.Id);
                     LogUpdated?.Invoke(this, $"{employee.Name} が退勤しました。");
                 }
                 catch (Exception ex)
@@ -110,7 +92,7 @@ namespace OOProjectBasedLeaning
         public void RefreshEmployeeList()
         {
             employeeComboBox.Items.Clear();
-            employeeComboBox.DisplayMember = "Name"; // 表示名を設定
+            employeeComboBox.DisplayMember = "Name";
 
             foreach (var emp in EmployeeRepository.GetAll())
             {
@@ -122,7 +104,7 @@ namespace OOProjectBasedLeaning
         {
             foreach (var emp in EmployeeRepository.GetAll())
             {
-                bool isWorking = timeTracker.IsAtWork(emp.Id); // 修正点③
+                bool isWorking = timeTracker.IsAtWork(emp.Id);
                 string status = $"{emp.Name} は {(isWorking ? "勤務中" : "退勤済み")}です。";
                 Console.WriteLine(status);
                 LogUpdated?.Invoke(this, status);
