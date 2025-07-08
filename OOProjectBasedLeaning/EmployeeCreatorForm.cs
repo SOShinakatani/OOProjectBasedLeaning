@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 using OOProjectBasedLeaning.Models;
 
@@ -13,7 +12,7 @@ namespace OOProjectBasedLeaning
         public EmployeeCreatorForm(HomeForm homeForm)
         {
             this.homeForm = homeForm;
-            InitializeComponent(); // UI 初期化
+            InitializeComponent();
         }
 
         private void EmployeeCreatorForm_Load(object sender, EventArgs e)

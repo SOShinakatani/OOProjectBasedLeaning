@@ -9,27 +9,26 @@ namespace OOProjectBasedLeaning
     {
         private TimeTrackerModel tracker;
         private TimeTrackerPanel panel;
-        private ComboBox employeeComboBox;
+        private Company company;
 
         public HomeForm(TimeTrackerModel tracker)
         {
             this.tracker = tracker;
             InitializeComponent();
 
-            var company = new CompanyModel("サンプル会社");
+            company = new CompanyModel("サンプル会社");
             company.AddTimeTracker(tracker);
 
-            panel = new TimeTrackerPanel(tracker, company);
+            panel = new TimeTrackerPanel(tracker, company)
+            {
+                Location = new Point(10, 10)
+            };
             this.Controls.Add(panel);
 
-            employeeComboBox = new ComboBox
-            {
-                Location = new Point(10, 220),
-                Size = new Size(200, 30)
-            };
-            Controls.Add(employeeComboBox);
-
             this.Text = "ホームフォーム";
+
+            // 初期表示の従業員リストを読み込み
+            RefreshEmployeeList();
         }
 
         public void SetLogHandler(EventHandler<string> handler)
@@ -39,11 +38,7 @@ namespace OOProjectBasedLeaning
 
         public void RefreshEmployeeList()
         {
-            employeeComboBox.Items.Clear();
-            foreach (var emp in EmployeeRepository.GetAll())
-            {
-                employeeComboBox.Items.Add(emp);
-            }
+            panel.RefreshEmployeeList();
         }
     }
 }

@@ -1,13 +1,10 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
-
-namespace OOProjectBasedLeaning
+﻿namespace OOProjectBasedLeaning
 {
     partial class EmployeeCreatorForm
     {
         private System.ComponentModel.IContainer components = null;
-        private TextBox nameTextBox;
-        private Button createButton;
+        private System.Windows.Forms.TextBox nameTextBox;
+        private System.Windows.Forms.Button createButton;
 
         protected override void Dispose(bool disposing)
         {
@@ -20,37 +17,39 @@ namespace OOProjectBasedLeaning
 
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            nameTextBox = new TextBox();
-            createButton = new Button();
-
-            SuspendLayout();
-
+            this.nameTextBox = new System.Windows.Forms.TextBox();
+            this.createButton = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
             // nameTextBox
-            new Point(50, 50);
-            nameTextBox.Size = new Size(300, 27);
-            nameTextBox.Name = "nameTextBox";
-            nameTextBox.TabIndex = 0;
-
+            // 
+            this.nameTextBox.Location = new System.Drawing.Point(12, 12);
+            this.nameTextBox.Name = "nameTextBox";
+            this.nameTextBox.Size = new System.Drawing.Size(260, 23);
+            this.nameTextBox.TabIndex = 0;
+            // 
             // createButton
-            createButton.Location = new Point(50, 100);
-            createButton.Size = new Size(120, 30);
-            createButton.Name = "createButton";
-            createButton.Text = "従業員を作成";
-            createButton.UseVisualStyleBackColor = true;
-            createButton.Click += CreateGuestEvent;
-
+            // 
+            this.createButton.Location = new System.Drawing.Point(12, 50);
+            this.createButton.Name = "createButton";
+            this.createButton.Size = new System.Drawing.Size(100, 30);
+            this.createButton.TabIndex = 1;
+            this.createButton.Text = "作成";
+            this.createButton.UseVisualStyleBackColor = true;
+            this.createButton.Click += new System.EventHandler(this.CreateGuestEvent);
+            // 
             // EmployeeCreatorForm
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(400, 200);
-            Controls.Add(nameTextBox);
-            Controls.Add(createButton);
-            Name = "EmployeeCreatorForm";
-            Text = "従業員作成フォーム";
-            Load += EmployeeCreatorForm_Load;
-            ResumeLayout(false);
-            PerformLayout();
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(284, 101);
+            this.Controls.Add(this.createButton);
+            this.Controls.Add(this.nameTextBox);
+            this.Name = "EmployeeCreatorForm";
+            this.Text = "従業員作成フォーム";
+            this.Load += new System.EventHandler(this.EmployeeCreatorForm_Load);
+            this.ResumeLayout(false);
+            this.PerformLayout();
         }
     }
 }
