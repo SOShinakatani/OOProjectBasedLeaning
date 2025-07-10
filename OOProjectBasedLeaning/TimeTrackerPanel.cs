@@ -12,6 +12,7 @@ namespace OOProjectBasedLeaning
         private ComboBox employeeComboBox;
         private Button punchInButton;
         private Button punchOutButton;
+        private Label lblStatus;
 
         public event EventHandler<string>? LogUpdated;
 
@@ -55,6 +56,15 @@ namespace OOProjectBasedLeaning
             };
             punchOutButton.Click += PunchOutButton_Click;
             this.Controls.Add(punchOutButton);
+
+            lblStatus = new Label
+            {
+                Text = "状態: -",
+                Location = new Point(10, 50),
+                AutoSize = true
+            };
+            this.Controls.Add(lblStatus);
+
         }
 
         private void PunchInButton_Click(object sender, EventArgs e)
@@ -65,6 +75,8 @@ namespace OOProjectBasedLeaning
                 {
                     timeTracker.PunchIn(employee.Id);
                     LogUpdated?.Invoke(this, $"{employee.Name} が出勤しました。");
+
+                    lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
                 }
                 catch (Exception ex)
                 {
@@ -81,6 +93,8 @@ namespace OOProjectBasedLeaning
                 {
                     timeTracker.PunchOut(employee.Id);
                     LogUpdated?.Invoke(this, $"{employee.Name} が退勤しました。");
+
+                    lblStatus.Text = $"{employee.Name} さんは現在、退勤済み";
                 }
                 catch (Exception ex)
                 {
@@ -110,5 +124,15 @@ namespace OOProjectBasedLeaning
                 LogUpdated?.Invoke(this, status);
             }
         }
+
+        private void UpdateSelectedEmployeeStatus()
+        {
+            if (employeeComboBox.SelectedItem is Employee emp)
+            {
+                bool isWorking = timeTracker.IsAtWork(emp.Id);
+                lblStatus.Text = $"{emp.Name} さんは現在、" + (isWorking ? "出勤中" : "退勤済み");
+            }
+        }
+
     }
 }
