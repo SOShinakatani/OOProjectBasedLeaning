@@ -1,4 +1,5 @@
 ﻿using OOProjectBasedLeaning;
+using OOProjectBasedLeaning.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,9 +75,11 @@ public class TimeTrackerModel : TimeTracker
 
     public void PunchIn(int employeeId)
     {
+        string employeeName = GetEmployeeName(employeeId);
+
         if (IsAtWork(employeeId))
         {
-            var msg = $"⚠️ 従業員 {employeeId} はすでに出勤済みです。";
+            string msg = "⚠️ 従業員 " + employeeName + " はすでに出勤済みです。";
             OnLogUpdated(msg);
             throw new InvalidOperationException(msg);
         }
@@ -93,14 +96,16 @@ public class TimeTrackerModel : TimeTracker
 
         punchInHistory[DateTime.Today][employeeId].Add(DateTime.Now);
 
-        OnLogUpdated($"従業員 {employeeId} が出勤しました: {DateTime.Now:yyyy/MM/dd HH:mm:ss}");
+        OnLogUpdated("従業員 " + employeeName + " が出勤しました: " + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"));
     }
 
     public void PunchOut(int employeeId)
     {
+        string employeeName = GetEmployeeName(employeeId);
+
         if (!IsAtWork(employeeId))
         {
-            var msg = $"⚠️ 従業員 {employeeId} はすでに退勤済みです。";
+            string msg = "⚠️ 従業員 " + employeeName + " はすでに退勤済みです。";
             OnLogUpdated(msg);
             throw new InvalidOperationException(msg);
         }
@@ -117,18 +122,28 @@ public class TimeTrackerModel : TimeTracker
 
         punchOutHistory[DateTime.Today][employeeId].Add(DateTime.Now);
 
-        OnLogUpdated($"従業員 {employeeId} が退勤しました: {DateTime.Now:yyyy/MM/dd HH:mm:ss}");
+        OnLogUpdated("従業員 " + employeeName + " が退勤しました: " + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"));
     }
 
     public bool IsAtWork(int employeeId)
     {
-        int inCount = punchInHistory.ContainsKey(DateTime.Today) && punchInHistory[DateTime.Today].ContainsKey(employeeId)
-            ? punchInHistory[DateTime.Today][employeeId].Count
-            : 0;
+        int inCount = 0;
+        if (punchInHistory.ContainsKey(DateTime.Today))
+        {
+            if (punchInHistory[DateTime.Today].ContainsKey(employeeId))
+            {
+                inCount = punchInHistory[DateTime.Today][employeeId].Count;
+            }
+        }
 
-        int outCount = punchOutHistory.ContainsKey(DateTime.Today) && punchOutHistory[DateTime.Today].ContainsKey(employeeId)
-            ? punchOutHistory[DateTime.Today][employeeId].Count
-            : 0;
+        int outCount = 0;
+        if (punchOutHistory.ContainsKey(DateTime.Today))
+        {
+            if (punchOutHistory[DateTime.Today].ContainsKey(employeeId))
+            {
+                outCount = punchOutHistory[DateTime.Today][employeeId].Count;
+            }
+        }
 
         return inCount > outCount;
     }
@@ -136,12 +151,16 @@ public class TimeTrackerModel : TimeTracker
     public bool TryGetPunchInTime(int employeeId, out DateTime time)
     {
         time = default;
-        if (punchInHistory.ContainsKey(DateTime.Today)
-            && punchInHistory[DateTime.Today].ContainsKey(employeeId)
-            && punchInHistory[DateTime.Today][employeeId].Count > 0)
+        if (punchInHistory.ContainsKey(DateTime.Today))
         {
-            time = punchInHistory[DateTime.Today][employeeId].Last();
-            return true;
+            if (punchInHistory[DateTime.Today].ContainsKey(employeeId))
+            {
+                if (punchInHistory[DateTime.Today][employeeId].Count > 0)
+                {
+                    time = punchInHistory[DateTime.Today][employeeId].Last();
+                    return true;
+                }
+            }
         }
         return false;
     }
@@ -149,35 +168,63 @@ public class TimeTrackerModel : TimeTracker
     public bool TryGetPunchOutTime(int employeeId, out DateTime time)
     {
         time = default;
-        if (punchOutHistory.ContainsKey(DateTime.Today)
-            && punchOutHistory[DateTime.Today].ContainsKey(employeeId)
-            && punchOutHistory[DateTime.Today][employeeId].Count > 0)
+        if (punchOutHistory.ContainsKey(DateTime.Today))
         {
-            time = punchOutHistory[DateTime.Today][employeeId].Last();
-            return true;
+            if (punchOutHistory[DateTime.Today].ContainsKey(employeeId))
+            {
+                if (punchOutHistory[DateTime.Today][employeeId].Count > 0)
+                {
+                    time = punchOutHistory[DateTime.Today][employeeId].Last();
+                    return true;
+                }
+            }
         }
         return false;
     }
-}
 
-
-public class NullTimeTracker : TimeTracker, NullObject
-{
-    private static readonly NullTimeTracker instance = new NullTimeTracker();
-
-    private NullTimeTracker() { }
-
-    public static TimeTracker Instance => instance;
-
-    public void PunchIn(int employeeId)
+    private string GetEmployeeName(int employeeId)
     {
-        // 何もしない
+        Employee? employee = null;
+
+        foreach (var emp in EmployeeRepository.GetAll())
+        {
+            if (emp.Id == employeeId)
+            {
+                employee = emp;
+                break;
+            }
+        }
+
+        if (employee == null)
+        {
+            return "ID:" + employeeId;
+        }
+        else
+        {
+            return employee.Name;
+        }
     }
 
-    public void PunchOut(int employeeId)
-    {
-        // 何もしない
-    }
 
-    public bool IsAtWork(int employeeId) => false;
+
+    public class NullTimeTracker : TimeTracker, NullObject
+    {
+        private static readonly NullTimeTracker instance = new NullTimeTracker();
+
+        private NullTimeTracker() { }
+
+        public static TimeTracker Instance => instance;
+
+        public void PunchIn(int employeeId)
+        {
+            // 何もしない
+        }
+
+        public void PunchOut(int employeeId)
+        {
+            // 何もしない
+        }
+
+        public bool IsAtWork(int employeeId) => false;
+    }
 }
