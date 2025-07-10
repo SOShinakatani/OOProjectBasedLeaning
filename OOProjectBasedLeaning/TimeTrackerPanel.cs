@@ -112,6 +112,8 @@ namespace OOProjectBasedLeaning
             {
                 employeeComboBox.Items.Add(emp);
             }
+
+            UpdateSelectedEmployeeStatus();
         }
 
         public void UpdateStatus()
