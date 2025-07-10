@@ -7,38 +7,31 @@ using static TimeTrackerModel;
 
 namespace OOProjectBasedLeaning
 {
-    /// <summary>
-    /// 会社の基本インターフェース。
-    /// 従業員の管理や出退勤の操作を定義。
-    /// </summary>
+    public enum WorkLocation
+    {
+        Office,
+        Home,
+        Remote
+    }
+
     public interface Company : Model
     {
         Company AddTimeTracker(TimeTracker timeTracker);
         Employee FindEmployeeByName(string name);
         Company AddEmployee(Employee employee);
         Company RemoveEmployee(Employee employee);
-        void ClockIn(Employee employee);
-        void ClockOut(Employee employee);
+        void ClockIn(Employee employee, WorkLocation location);
+        void ClockOut(Employee employee, WorkLocation location);
         bool IsAtWork(Employee employee);
     }
 
-    /// <summary>
-    /// 実際の会社の実装クラス。
-    /// 従業員の管理や出退勤の記録を行う。
-    /// </summary>
     public class CompanyModel : ModelEntity, Company
     {
         private TimeTracker timeTracker = NullTimeTracker.Instance;
         private List<Employee> employees = new List<Employee>();
 
-        /// <summary>
-        /// 名前なしの会社を初期化。
-        /// </summary>
         public CompanyModel() : this(string.Empty) { }
 
-        /// <summary>
-        /// 指定された名前で会社を初期化し、従業員情報を読み込む。
-        /// </summary>
         public CompanyModel(string name)
         {
             Name = name;
@@ -49,26 +42,17 @@ namespace OOProjectBasedLeaning
             }
         }
 
-        /// <summary>
-        /// 出退勤管理用のタイムトラッカーを設定。
-        /// </summary>
         public Company AddTimeTracker(TimeTracker timeTracker)
         {
             this.timeTracker = timeTracker;
             return this;
         }
 
-        /// <summary>
-        /// 名前から従業員を検索。見つからない場合は NullEmployee を返す。
-        /// </summary>
         public Employee FindEmployeeByName(string name)
         {
             return employees.Find(e => e.Name == name) ?? NullEmployee.Instance;
         }
 
-        /// <summary>
-        /// 従業員を追加。重複する名前の従業員は追加しない。
-        /// </summary>
         public Company AddEmployee(Employee employee)
         {
             if (FindEmployeeByName(employee.Name) is NullEmployee)
@@ -78,41 +62,32 @@ namespace OOProjectBasedLeaning
             return this;
         }
 
-        /// <summary>
-        /// 指定された従業員を削除（名前一致で削除）。
-        /// </summary>
         public Company RemoveEmployee(Employee employee)
         {
             employees.RemoveAll(e => e.Name == employee.Name);
             return this;
         }
 
-        /// <summary>
-        /// 従業員の出勤を記録。
-        /// </summary>
-        public void ClockIn(Employee employee) => Track(employee, timeTracker.PunchIn);
+        public void ClockIn(Employee employee, WorkLocation location)
+        {
+            Track(employee, id => timeTracker.PunchIn(id, location));
+        }
 
-        /// <summary>
-        /// 従業員の退勤を記録。
-        /// </summary>
-        public void ClockOut(Employee employee) => Track(employee, timeTracker.PunchOut);
+        public void ClockOut(Employee employee, WorkLocation location)
+        {
+            Track(employee, id => timeTracker.PunchOut(id, location));
+        }
 
-        /// <summary>
-        /// 従業員が勤務中かどうかを判定。
-        /// </summary>
-        public bool IsAtWork(Employee employee) => timeTracker.IsAtWork(employee.Id);
+        public bool IsAtWork(Employee employee)
+        {
+            return timeTracker.IsAtWork(employee.Id);
+        }
 
-        /// <summary>
-        /// 出退勤処理の共通化メソッド。
-        /// </summary>
         private void Track(Employee employee, Action<int> action)
         {
             action(employee.Id);
         }
 
-        /// <summary>
-        /// XML読み込み失敗時の代替従業員リスト。
-        /// </summary>
         public static List<Employee> StaticEmployeeList { get; } = new List<Employee>
         {
             new Manager(1, "Manager1"),
@@ -122,10 +97,6 @@ namespace OOProjectBasedLeaning
             new EmployeeModel(3000, "Employee3000")
         };
 
-        /// <summary>
-        /// 従業員情報を XML ファイルから取得。
-        /// 読み込み失敗時は StaticEmployeeList を返す。
-        /// </summary>
         private List<Employee> AcquireEmployees()
         {
             try
@@ -139,9 +110,6 @@ namespace OOProjectBasedLeaning
             }
         }
 
-        /// <summary>
-        /// XML ファイルから従業員情報を読み込む。
-        /// </summary>
         private List<Employee> LoadEmployeesFromXml(string path)
         {
             var doc = XDocument.Load(path);
@@ -161,28 +129,18 @@ namespace OOProjectBasedLeaning
             return employeeList;
         }
 
-        /// <summary>
-        /// 名前から一意な ID を生成（ハッシュ値を使用）。
-        /// </summary>
         private int GenerateId(string name)
         {
             return Math.Abs(name.GetHashCode());
         }
     }
 
-    /// <summary>
-    /// Null オブジェクトパターンによる Company の空実装。
-    /// 実体が存在しない会社を表す。
-    /// </summary>
     public class NullCompany : ModelEntity, Company, NullObject
     {
         private static readonly Company instance = new NullCompany();
 
         private NullCompany() { }
 
-        /// <summary>
-        /// NullCompany のインスタンス（シングルトン）。
-        /// </summary>
         public static Company Instance => instance;
 
         public override string Name
@@ -195,8 +153,8 @@ namespace OOProjectBasedLeaning
         public Employee FindEmployeeByName(string name) => NullEmployee.Instance;
         public Company AddEmployee(Employee employee) => this;
         public Company RemoveEmployee(Employee employee) => this;
-        public void ClockIn(Employee employee) { }
-        public void ClockOut(Employee employee) { }
+        public void ClockIn(Employee employee, WorkLocation location) { }
+        public void ClockOut(Employee employee, WorkLocation location) { }
         public bool IsAtWork(Employee employee) => false;
     }
 }
