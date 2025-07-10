@@ -5,18 +5,22 @@ using System.Windows.Forms;
 
 namespace OOProjectBasedLeaning
 {
+    /// <summary>
+    /// ドラッグ＆ドロップ可能なパネルの抽象クラス
+    /// </summary>
     public abstract class DragDropPanel : Panel, ISerializable
     {
-        private Form form = NullDragDropForm.Instance;
+        private Form currentForm = NullDragDropForm.Instance;
 
         protected DragDropPanel()
         {
-            MouseDown += (sender, e) => OnPanelMouseDown();
+            MouseDown += HandleMouseDown;
         }
 
         /// <summary>
-        /// Override this method to define behavior when the panel is clicked.
-        /// Example:
+        /// パネルがクリックされたときの処理を定義する抽象メソッド。
+        /// 継承先でオーバーライドして使用してください。
+        /// 例:
         /// protected override void OnPanelMouseDown()
         /// {
         ///     DoDragDropCopy();
@@ -24,39 +28,69 @@ namespace OOProjectBasedLeaning
         /// </summary>
         protected abstract void OnPanelMouseDown();
 
+        /// <summary>
+        /// ドラッグ＆ドロップ（コピー）を開始する
+        /// </summary>
         protected void DoDragDropCopy() => DoDragDrop(this, DragDropEffects.Copy);
+
+        /// <summary>
+        /// ドラッグ＆ドロップ（移動）を開始する
+        /// </summary>
         protected void DoDragDropMove() => DoDragDrop(this, DragDropEffects.Move);
 
+        /// <summary>
+        /// シリアライズ処理（必要に応じて実装）
+        /// </summary>
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            // Implement serialization logic if needed
+            // 必要に応じてシリアライズ処理を実装
         }
 
-        public virtual DragDropPanel AddDragDropForm(Form form, Point dropPoint)
+        /// <summary>
+        /// 指定されたフォームにパネルを追加し、指定位置に移動する
+        /// </summary>
+        public virtual DragDropPanel AddToForm(Form form, Point dropPoint)
         {
-            RemoveForm();
-            this.form = form;
-            this.form.Controls.Add(MoveTo(dropPoint));
+            RemoveFromForm();
+            currentForm = form;
+            currentForm.Controls.Add(MoveTo(dropPoint));
             return this;
         }
 
-        public virtual DragDropPanel RemoveForm()
+        /// <summary>
+        /// 現在のフォームからパネルを削除する
+        /// </summary>
+        public virtual DragDropPanel RemoveFromForm()
         {
-            if (form.Contains(this))
+            if (currentForm.Contains(this))
             {
-                form.Controls.Remove(this);
-                form = NullDragDropForm.Instance;
+                currentForm.Controls.Remove(this);
+                currentForm = NullDragDropForm.Instance;
             }
             return this;
         }
 
+        /// <summary>
+        /// パネルを指定位置に移動する
+        /// </summary>
         protected DragDropPanel MoveTo(Point point)
         {
             Location = point;
             return this;
         }
+
+        /// <summary>
+        /// MouseDownイベントのハンドラ
+        /// </summary>
+        private void HandleMouseDown(object sender, MouseEventArgs e)
+        {
+            OnPanelMouseDown();
+        }
     }
 
+    /// <summary>
+    /// Nullオブジェクトパターンを使用したドラッグ＆ドロップパネルの実装
+    /// </summary>
     public class NullDragDropPanel : DragDropPanel, NullObject
     {
         private static readonly DragDropPanel instance = new NullDragDropPanel();
@@ -67,7 +101,7 @@ namespace OOProjectBasedLeaning
 
         protected override void OnPanelMouseDown() { }
 
-        public override DragDropPanel AddDragDropForm(Form form, Point dropPoint) => this;
-        public override DragDropPanel RemoveForm() => this;
+        public override DragDropPanel AddToForm(Form form, Point dropPoint) => this;
+        public override DragDropPanel RemoveFromForm() => this;
     }
 }
