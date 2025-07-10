@@ -7,8 +7,8 @@ namespace OOProjectBasedLeaning
 {
     public partial class TimeTrackerPanel : Panel
     {
-        private TimeTrackerModel timeTracker;
-        private Company company;
+        private readonly TimeTrackerModel timeTracker;
+        private readonly Company company;
         private ComboBox employeeComboBox;
         private Button punchInButton;
         private Button punchOutButton;
@@ -18,23 +18,25 @@ namespace OOProjectBasedLeaning
 
         public TimeTrackerPanel(TimeTrackerModel timeTracker, Company company)
         {
-            this.timeTracker = timeTracker;
-            this.company = company;
+            this.timeTracker = timeTracker ?? throw new ArgumentNullException(nameof(timeTracker));
+            this.company = company ?? throw new ArgumentNullException(nameof(company));
             InitializeComponent();
         }
 
         private void InitializeComponent()
         {
-            // パネルサイズを適当に設定
+            // パネルサイズ設定
             this.Size = new Size(600, 500);
 
-            // プルダウンリスト（社員選択）
+            // 社員選択用コンボボックス
             employeeComboBox = new ComboBox
             {
                 Location = new Point(10, 10),
                 Size = new Size(200, 30),
-                DropDownStyle = ComboBoxStyle.DropDownList
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                DisplayMember = "Name"
             };
+            employeeComboBox.SelectedIndexChanged += (s, e) => UpdateSelectedEmployeeStatus();
             this.Controls.Add(employeeComboBox);
 
             // 出勤ボタン
@@ -57,6 +59,7 @@ namespace OOProjectBasedLeaning
             punchOutButton.Click += PunchOutButton_Click;
             this.Controls.Add(punchOutButton);
 
+            // 状態表示ラベル
             lblStatus = new Label
             {
                 Text = "状態: -",
@@ -64,7 +67,6 @@ namespace OOProjectBasedLeaning
                 AutoSize = true
             };
             this.Controls.Add(lblStatus);
-
         }
 
         private void PunchInButton_Click(object sender, EventArgs e)
@@ -75,7 +77,6 @@ namespace OOProjectBasedLeaning
                 {
                     timeTracker.PunchIn(employee.Id);
                     LogUpdated?.Invoke(this, $"{employee.Name} が出勤しました。");
-
                     lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
                 }
                 catch (Exception ex)
@@ -93,7 +94,6 @@ namespace OOProjectBasedLeaning
                 {
                     timeTracker.PunchOut(employee.Id);
                     LogUpdated?.Invoke(this, $"{employee.Name} が退勤しました。");
-
                     lblStatus.Text = $"{employee.Name} さんは現在、退勤済み";
                 }
                 catch (Exception ex)
@@ -106,14 +106,20 @@ namespace OOProjectBasedLeaning
         public void RefreshEmployeeList()
         {
             employeeComboBox.Items.Clear();
-            employeeComboBox.DisplayMember = "Name";
 
             foreach (var emp in EmployeeRepository.GetAll())
             {
                 employeeComboBox.Items.Add(emp);
             }
 
-            UpdateSelectedEmployeeStatus();
+            if (employeeComboBox.Items.Count > 0)
+            {
+                employeeComboBox.SelectedIndex = 0;
+            }
+            else
+            {
+                lblStatus.Text = "状態: -";
+            }
         }
 
         public void UpdateStatus()
@@ -134,7 +140,10 @@ namespace OOProjectBasedLeaning
                 bool isWorking = timeTracker.IsAtWork(emp.Id);
                 lblStatus.Text = $"{emp.Name} さんは現在、" + (isWorking ? "出勤中" : "退勤済み");
             }
+            else
+            {
+                lblStatus.Text = "状態: -";
+            }
         }
-
     }
 }

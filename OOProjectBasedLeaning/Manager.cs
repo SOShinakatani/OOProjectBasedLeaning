@@ -4,8 +4,9 @@
     {
         public Manager(int id, string name) : base(id, name)
         {
+            // コンストラクタは親クラスに任せるので特に変更なし
         }
 
-        // Manager 固有の機能があればここに追加
+        // Manager固有の機能が追加される場合はここに記述
     }
 }

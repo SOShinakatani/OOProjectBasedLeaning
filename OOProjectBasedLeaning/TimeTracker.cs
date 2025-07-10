@@ -1,6 +1,7 @@
 ﻿using OOProjectBasedLeaning;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public interface TimeTracker
 {
@@ -42,30 +43,28 @@ public class SimpleTimeTracker : TimeTracker
         return punchInTimes.ContainsKey(employeeId) && !punchOutTimes.ContainsKey(employeeId);
     }
 }
-//多分完了
 
 
 public class TimeTrackerModel : TimeTracker
 {
     private Company company = NullCompany.Instance;
 
-    private Dictionary<DateTime, Dictionary<int, List<DateTime>>> punchInHistory = new Dictionary<DateTime, Dictionary<int, List<DateTime>>>();
-    private Dictionary<DateTime, Dictionary<int, List<DateTime>>> punchOutHistory = new Dictionary<DateTime, Dictionary<int, List<DateTime>>>();
-
-    private Mode mode = Mode.PunchIn;
-
-    public event EventHandler<string>? LogUpdated;
-
-    // --- イベント発火用メソッド ---
-    protected void OnLogUpdated(string message)
-    {
-        LogUpdated?.Invoke(this, message);
-    }
+    // 日付ごとに従業員IDごとの複数の打刻時刻を管理
+    private readonly Dictionary<DateTime, Dictionary<int, List<DateTime>>> punchInHistory = new();
+    private readonly Dictionary<DateTime, Dictionary<int, List<DateTime>>> punchOutHistory = new();
 
     private enum Mode
     {
         PunchIn,
         PunchOut
+    }
+    private Mode mode = Mode.PunchIn;
+
+    public event EventHandler<string>? LogUpdated;
+
+    protected void OnLogUpdated(string message)
+    {
+        LogUpdated?.Invoke(this, message);
     }
 
     public TimeTrackerModel(Company company)
@@ -78,7 +77,7 @@ public class TimeTrackerModel : TimeTracker
         if (IsAtWork(employeeId))
         {
             var msg = $"⚠️ 従業員 {employeeId} はすでに出勤済みです。";
-            OnLogUpdated(msg); // ← ここでログ通知！
+            OnLogUpdated(msg);
             throw new InvalidOperationException(msg);
         }
 
@@ -102,7 +101,7 @@ public class TimeTrackerModel : TimeTracker
         if (!IsAtWork(employeeId))
         {
             var msg = $"⚠️ 従業員 {employeeId} はすでに退勤済みです。";
-            OnLogUpdated(msg); // ← ログに残す
+            OnLogUpdated(msg);
             throw new InvalidOperationException(msg);
         }
 
@@ -159,43 +158,26 @@ public class TimeTrackerModel : TimeTracker
         }
         return false;
     }
-
-
 }
 
-//この下から
 
-public class NullTimeTracker : TimeTracker, NullObject 
+public class NullTimeTracker : TimeTracker, NullObject
+{
+    private static readonly NullTimeTracker instance = new NullTimeTracker();
+
+    private NullTimeTracker() { }
+
+    public static TimeTracker Instance => instance;
+
+    public void PunchIn(int employeeId)
     {
-
-        private static NullTimeTracker instance = new NullTimeTracker();
-
-        private NullTimeTracker()
-        {
-            
-        }
-
-        public static TimeTracker Instance { get { return instance; } }
-
-
-        public void PunchIn(int employeeId)
-        {
-
-        }
-
-        public void PunchOut(int employeeId)
-        {
-
-        }
-
-        public bool IsAtWork(int employeeId)
-        {
-
-            return false;
-
-        }
-
+        // 何もしない
     }
 
+    public void PunchOut(int employeeId)
+    {
+        // 何もしない
+    }
 
-
+    public bool IsAtWork(int employeeId) => false;
+}
