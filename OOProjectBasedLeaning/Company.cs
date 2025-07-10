@@ -7,13 +7,6 @@ using static TimeTrackerModel;
 
 namespace OOProjectBasedLeaning
 {
-    public enum WorkLocation
-    {
-        Office,
-        Home,
-        Remote
-    }
-
     public interface Company : Model
     {
         Company AddTimeTracker(TimeTracker timeTracker);
@@ -70,22 +63,17 @@ namespace OOProjectBasedLeaning
 
         public void ClockIn(Employee employee, WorkLocation location)
         {
-            Track(employee, id => timeTracker.PunchIn(id, location));
+            timeTracker.PunchIn(employee.Id, location);
         }
 
         public void ClockOut(Employee employee, WorkLocation location)
         {
-            Track(employee, id => timeTracker.PunchOut(id, location));
+            timeTracker.PunchOut(employee.Id, location);
         }
 
         public bool IsAtWork(Employee employee)
         {
             return timeTracker.IsAtWork(employee.Id);
-        }
-
-        private void Track(Employee employee, Action<int> action)
-        {
-            action(employee.Id);
         }
 
         public static List<Employee> StaticEmployeeList { get; } = new List<Employee>

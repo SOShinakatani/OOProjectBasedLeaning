@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
+using OOProjectBasedLeaning;
 using OOProjectBasedLeaning.Models;
 
 namespace OOProjectBasedLeaning
@@ -10,6 +11,7 @@ namespace OOProjectBasedLeaning
         private readonly TimeTrackerModel timeTracker;
         private readonly Company company;
         private ComboBox employeeComboBox;
+        private ComboBox locationComboBox;
         private Button punchInButton;
         private Button punchOutButton;
         private Label lblStatus;
@@ -25,10 +27,8 @@ namespace OOProjectBasedLeaning
 
         private void InitializeComponent()
         {
-            // パネルサイズ設定
             this.Size = new Size(600, 500);
 
-            // 社員選択用コンボボックス
             employeeComboBox = new ComboBox
             {
                 Location = new Point(10, 10),
@@ -39,27 +39,34 @@ namespace OOProjectBasedLeaning
             employeeComboBox.SelectedIndexChanged += (s, e) => UpdateSelectedEmployeeStatus();
             this.Controls.Add(employeeComboBox);
 
-            // 出勤ボタン
+            locationComboBox = new ComboBox
+            {
+                Location = new Point(220, 10),
+                Size = new Size(120, 30),
+                DropDownStyle = ComboBoxStyle.DropDownList
+            };
+            locationComboBox.Items.AddRange(Enum.GetNames(typeof(WorkLocation)));
+            locationComboBox.SelectedIndex = 0;
+            this.Controls.Add(locationComboBox);
+
             punchInButton = new Button
             {
                 Text = "出勤",
-                Location = new Point(220, 10),
+                Location = new Point(350, 10),
                 Size = new Size(80, 30)
             };
             punchInButton.Click += PunchInButton_Click;
             this.Controls.Add(punchInButton);
 
-            // 退勤ボタン
             punchOutButton = new Button
             {
                 Text = "退勤",
-                Location = new Point(310, 10),
+                Location = new Point(440, 10),
                 Size = new Size(80, 30)
             };
             punchOutButton.Click += PunchOutButton_Click;
             this.Controls.Add(punchOutButton);
 
-            // 状態表示ラベル
             lblStatus = new Label
             {
                 Text = "状態: -",
@@ -75,9 +82,10 @@ namespace OOProjectBasedLeaning
             {
                 try
                 {
-                    timeTracker.PunchIn(employee.Id);
-                    LogUpdated?.Invoke(this, $"{employee.Name} が出勤しました。");
-                    lblStatus.Text = $"{employee.Name} さんは現在、出勤中";
+                    var location = GetSelectedLocation();
+                    timeTracker.PunchIn(employee.Id, location);
+                    LogUpdated?.Invoke(this, $"{employee.Name} が出勤しました（{location}）");
+                    lblStatus.Text = $"{employee.Name} さんは現在、出勤中（{location}）";
                 }
                 catch (Exception ex)
                 {
@@ -92,8 +100,9 @@ namespace OOProjectBasedLeaning
             {
                 try
                 {
-                    timeTracker.PunchOut(employee.Id);
-                    LogUpdated?.Invoke(this, $"{employee.Name} が退勤しました。");
+                    var location = GetSelectedLocation();
+                    timeTracker.PunchOut(employee.Id, location);
+                    LogUpdated?.Invoke(this, $"{employee.Name} が退勤しました（{location}）");
                     lblStatus.Text = $"{employee.Name} さんは現在、退勤済み";
                 }
                 catch (Exception ex)
@@ -101,6 +110,15 @@ namespace OOProjectBasedLeaning
                     MessageBox.Show(ex.Message, "エラー", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private WorkLocation GetSelectedLocation()
+        {
+            if (Enum.TryParse(locationComboBox.SelectedItem?.ToString(), out WorkLocation location))
+            {
+                return location;
+            }
+            return WorkLocation.Office;
         }
 
         public void RefreshEmployeeList()
