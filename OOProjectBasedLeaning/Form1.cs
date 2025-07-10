@@ -44,7 +44,7 @@ namespace OOProjectBasedLeaning
             logListBox = new ListBox
             {
                 Location = new Point(10, 10),
-                Size = new Size(400, 200)
+                Size = new Size(500, 200)
             };
             Controls.Add(logListBox);
         }

@@ -3,7 +3,6 @@ using OOProjectBasedLeaning;
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
-using static TimeTrackerModel;
 
 namespace OOProjectBasedLeaning
 {
@@ -11,6 +10,7 @@ namespace OOProjectBasedLeaning
     {
         Company AddTimeTracker(TimeTracker timeTracker);
         Employee FindEmployeeByName(string name);
+        Employee FindEmployeeById(int id); // 🔧 追加
         Company AddEmployee(Employee employee);
         Company RemoveEmployee(Employee employee);
         void ClockIn(Employee employee, WorkLocation location);
@@ -44,6 +44,11 @@ namespace OOProjectBasedLeaning
         public Employee FindEmployeeByName(string name)
         {
             return employees.Find(e => e.Name == name) ?? NullEmployee.Instance;
+        }
+
+        public Employee FindEmployeeById(int id) // 🔧 追加
+        {
+            return employees.Find(e => e.Id == id) ?? NullEmployee.Instance;
         }
 
         public Company AddEmployee(Employee employee)
@@ -109,9 +114,10 @@ namespace OOProjectBasedLeaning
                 string role = element.Element("Role")?.Value ?? "Employee";
                 int id = GenerateId(name);
 
-                employeeList.Add(role == "Manager"
-                    ? new Manager(id, name)
-                    : new EmployeeModel(id, name));
+                if (role == "Manager")
+                    employeeList.Add(new Manager(id, name));
+                else
+                    employeeList.Add(new EmployeeModel(id, name));
             }
 
             return employeeList;
@@ -139,10 +145,27 @@ namespace OOProjectBasedLeaning
 
         public Company AddTimeTracker(TimeTracker timeTracker) => this;
         public Employee FindEmployeeByName(string name) => NullEmployee.Instance;
+        public Employee FindEmployeeById(int id) => NullEmployee.Instance; // 🔧 追加
         public Company AddEmployee(Employee employee) => this;
         public Company RemoveEmployee(Employee employee) => this;
         public void ClockIn(Employee employee, WorkLocation location) { }
         public void ClockOut(Employee employee, WorkLocation location) { }
         public bool IsAtWork(Employee employee) => false;
+    }
+
+    // 🔽 NullTimeTrackerクラス
+    public class NullTimeTracker : TimeTracker
+    {
+        private static readonly TimeTracker instance = new NullTimeTracker();
+
+        private NullTimeTracker() { }
+
+        public static TimeTracker Instance => instance;
+
+        public void PunchIn(int employeeId) { }
+        public void PunchIn(int employeeId, WorkLocation location) { }
+        public void PunchOut(int employeeId) { }
+        public void PunchOut(int employeeId, WorkLocation location) { }
+        public bool IsAtWork(int employeeId) => false;
     }
 }

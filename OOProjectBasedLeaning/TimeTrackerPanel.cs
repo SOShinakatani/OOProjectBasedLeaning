@@ -84,7 +84,7 @@ namespace OOProjectBasedLeaning
                 {
                     var location = GetSelectedLocation();
                     timeTracker.PunchIn(employee.Id, location);
-                    LogUpdated?.Invoke(this, $"{employee.Name} が出勤しました（{location}）");
+                    
                     lblStatus.Text = $"{employee.Name} さんは現在、出勤中（{location}）";
                 }
                 catch (Exception ex)
@@ -102,7 +102,7 @@ namespace OOProjectBasedLeaning
                 {
                     var location = GetSelectedLocation();
                     timeTracker.PunchOut(employee.Id, location);
-                    LogUpdated?.Invoke(this, $"{employee.Name} が退勤しました（{location}）");
+                    
                     lblStatus.Text = $"{employee.Name} さんは現在、退勤済み";
                 }
                 catch (Exception ex)
